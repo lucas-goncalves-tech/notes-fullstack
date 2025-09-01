@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "lint-staged": {
-    "*.ts": "eslint --fix"
+    "*.ts": "eslint --fix --max-warnings=0"
   },
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
