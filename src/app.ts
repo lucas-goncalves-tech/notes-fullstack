@@ -7,7 +7,7 @@ import router from "./routes";
 import { requestLogger } from "./shared/middleware/logger.middleware";
 import { errorHandler } from "./shared/middleware/error-handler.middleware";
 
-let ola;
+let olaB;
 
 dotenv.config();
 
