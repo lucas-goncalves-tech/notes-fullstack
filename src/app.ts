@@ -7,8 +7,6 @@ import router from "./routes";
 import { requestLogger } from "./shared/middleware/logger.middleware";
 import { errorHandler } from "./shared/middleware/error-handler.middleware";
 
-let olaB;
-
 dotenv.config();
 
 const app = express();
