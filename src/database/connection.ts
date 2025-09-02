@@ -1,7 +1,14 @@
 import Database from "better-sqlite3";
+import { configDotenv } from "dotenv";
 import path from "node:path";
 
-const dbPath = path.join(__dirname, "..", "..", "database.sqlite");
+configDotenv();
+
+const rawPath = process.env.DATABASE_PATH;
+if (!rawPath) {
+  throw new Error("DB PATH not defined!");
+}
+const dbPath = path.resolve(rawPath);
 const db = new Database(dbPath);
 
 db.exec(`

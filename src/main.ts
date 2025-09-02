@@ -4,7 +4,7 @@ import { Server } from "http";
 const PORT = process.env.PORT || 3333;
 
 const server: Server = app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
 
 const gracefulShutdown = (signal: string) => {
