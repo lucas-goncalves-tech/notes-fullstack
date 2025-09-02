@@ -29,9 +29,9 @@ export class NotesService {
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }
-    const updatedId = this.notesRepository.update(id, note);
+    const noteTitle = this.notesRepository.update(id, note);
 
-    return updatedId;
+    return noteTitle;
   }
 
   delete(id: string) {

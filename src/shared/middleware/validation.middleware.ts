@@ -26,7 +26,7 @@ export function validate(schemas: ValidationSchemas) {
           })),
         );
 
-        throw new BadRequestError("Erro na validaçao", errors);
+        throw new BadRequestError("Erro na validação", errors);
       }
       next(error);
     }

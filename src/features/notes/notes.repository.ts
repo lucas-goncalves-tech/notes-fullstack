@@ -37,16 +37,29 @@ export class NotesRepository {
   }
 
   update(id: string, note: UpdateNoteSchema) {
+    const fields = [];
+    const values = [];
+
+    if (note.title !== undefined) {
+      fields.push("title = ?");
+      values.push(note.title);
+    }
+    if (note.content !== undefined) {
+      fields.push("content = ?");
+      values.push(note.content);
+    }
+
     const sql = `UPDATE notes 
-    SET title = ?, content = ?, updated_at = CURRENT_TIMESTAMP 
+    SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
     WHERE id = ?`;
 
     const stmt = db.prepare(sql);
     try {
-      stmt.run(note.title, note.content, id);
-      return id;
+      stmt.run(...values, id);
+      return note.title;
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
+      throw err;
     }
   }
 
@@ -58,6 +71,7 @@ export class NotesRepository {
       stmt.run(id);
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
+      throw err;
     }
   }
 }

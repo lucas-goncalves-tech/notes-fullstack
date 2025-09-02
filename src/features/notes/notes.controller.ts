@@ -32,13 +32,12 @@ export class NotesController {
     const { id } = req.params;
     const { content, title } = req.body as UpdateNoteSchema;
 
-    const updatedId = this.notesService.update(id, {
+    const noteTitle = this.notesService.update(id, {
       content,
       title,
     });
-
     res.status(200).json({
-      message: `Nota ${updatedId} atualizada com sucesso!`,
+      message: `Nota ${noteTitle} atualizada com sucesso!`,
     });
   };
 
