@@ -3,7 +3,7 @@ import { NotesController } from "./notes.controller";
 import { validate } from "../../shared/middleware/validation.middleware";
 import { createNoteSchema } from "./dtos/create-note.dto";
 import { updateNoteSchema } from "./dtos/update-note.dto";
-import { taskParamsSchema } from "./dtos/task-params.dto";
+import { noteParamsSchema } from "./dtos/note-params.dto";
 import { NotesService } from "./notes.service";
 import { NotesRepository } from "./notes.repository";
 
@@ -31,9 +31,9 @@ const notesController = new NotesController(notesService);
  *                 {
  *                   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
  *                   "title": "Minha nota",
- *                   "content": "Descrição da minha nota",
- *                   "created_at": "2025-09-02 14:57:09",
- *                   "updated_at": "2025-09-02 14:57:09"
+ *                   "description": "Descrição da minha nota",
+ *                   "importance": "baixo",
+ *                   "completed": 0,
  *                 }
  *               ]
  */
@@ -109,7 +109,8 @@ notesRouter.get("/:id", notesController.getById);
  *              - type: object
  *                example:
  *                  title: 'Minha nova nota'
- *                  content: 'Descrição da minha nota'
+ *                  description: 'Descrição da minha nota'
+ *                  importance: 'baixo'
  */
 notesRouter.post(
   "/",
@@ -140,7 +141,9 @@ notesRouter.post(
  *            $ref: '#/components/schemas/UpdateNote'
  *          example:
  *            title: "Novo titulo da minha nota"
- *            content: "Nova descrição da nota"
+ *            description: "Nova descrição da nota"
+ *            importance: "medio"
+ *            completed: 1
  *    responses:
  *      200:
  *        description: Nota atualizada com sucesso!
@@ -165,7 +168,7 @@ notesRouter.put(
   "/:id",
   validate({
     body: updateNoteSchema,
-    params: taskParamsSchema,
+    params: noteParamsSchema,
   }),
   notesController.update,
 );

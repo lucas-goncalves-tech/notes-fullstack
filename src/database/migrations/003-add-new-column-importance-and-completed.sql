@@ -1,0 +1,2 @@
+ALTER TABLE "notes" ADD COLUMN "importance" TEXT NOT NULL DEFAULT 'baixo' CHECK (importance IN ('baixo', 'medio', 'alto'));
+ALTER TABLE "notes" ADD COLUMN "completed" INTEGER DEFAULT 0 CHECK (completed IN (0,1));

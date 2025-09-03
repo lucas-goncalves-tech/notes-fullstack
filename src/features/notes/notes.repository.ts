@@ -2,33 +2,37 @@ import { db } from "../../database/connection";
 
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
-import { INotes } from "./notes.interface";
+import { INote } from "./notes.interface";
 import { randomUUID } from "crypto";
 
 export class NotesRepository {
-  getAll(): INotes[] {
-    const sql = `SELECT * FROM notes;`;
+  getAll(): INote[] {
+    const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
     const stmt = db.prepare(sql);
-    return stmt.all() as INotes[];
+    return stmt.all() as INote[];
   }
 
-  findById(id: string): INotes | undefined {
-    const sql = `SELECT * FROM notes WHERE id = ?;`;
+  findById(id: string): INote | undefined {
+    const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
     const stmt = db.prepare(sql);
-    return stmt.get(id) as INotes | undefined;
+    return stmt.get(id) as INote | undefined;
   }
 
-  create(note: CreateNoteSchema): Pick<INotes, "id" | "content" | "title"> {
+  create(
+    note: CreateNoteSchema,
+  ): Pick<INote, "id" | "description" | "title" | "importance" | "completed"> {
     const id = randomUUID();
-    const sql = `INSERT INTO notes (id, title, content) VALUES (?, ?, ?)`;
+    const sql = `INSERT INTO notes ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
     const stmt = db.prepare(sql);
 
     try {
-      stmt.run(id, note.title, note.content);
+      stmt.run(id, note.title, note.description, note.importance);
       return {
         id,
         title: note.title,
-        content: note.content,
+        description: note.description,
+        importance: note.importance,
+        completed: 0,
       };
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
@@ -36,35 +40,46 @@ export class NotesRepository {
     }
   }
 
-  update(id: string, note: UpdateNoteSchema) {
+  update(id: string, note: UpdateNoteSchema): INote {
     const fields = [];
     const values = [];
 
-    if (note.title !== undefined) {
-      fields.push("title = ?");
-      values.push(note.title);
-    }
-    if (note.content !== undefined) {
-      fields.push("content = ?");
-      values.push(note.content);
+    const fieldMap = {
+      title: "title",
+      description: "description",
+      importance: "importance",
+      completed: "completed",
+    };
+
+    for (const key in note) {
+      const value = note[key as keyof UpdateNoteSchema];
+      if (value !== undefined) {
+        fields.push(`${fieldMap[key as keyof typeof fieldMap]} = ?`);
+        values.push(value);
+      }
     }
 
-    const sql = `UPDATE notes 
-    SET ${fields.join(", ")}, updated_at = CURRENT_TIMESTAMP 
-    WHERE id = ?`;
+    // Always update the updated_at timestamp
+    fields.push("updated_at = CURRENT_TIMESTAMP");
+
+    const sql = `UPDATE "notes" 
+    SET ${fields.join(", ")} 
+    WHERE "id" = ?;`;
 
     const stmt = db.prepare(sql);
     try {
       stmt.run(...values, id);
-      return note.title;
+
+      // Return the updated note
+      return this.findById(id)!;
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
     }
   }
 
-  delete(id: string) {
-    const sql = `DELETE FROM notes WHERE id = ?`;
+  delete(id: string): void {
+    const sql = `DELETE FROM "notes" WHERE "id" = ?;`;
     const stmt = db.prepare(sql);
 
     try {

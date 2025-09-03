@@ -23,22 +23,23 @@ export class NotesController {
 
     const createdNote = this.notesService.create(note);
 
-    res.status(201).json({
-      message: `Nota ${createdNote.title} adicionada com sucesso!`,
-    });
+    res.status(201).json(createdNote);
   };
 
   update = (req: Request, res: Response) => {
     const { id } = req.params;
-    const { content, title } = req.body as UpdateNoteSchema;
+    const { description, title, completed, importance } =
+      req.body as UpdateNoteSchema;
 
-    const noteTitle = this.notesService.update(id, {
-      content,
+    this.notesService.update(id, {
       title,
+      description,
+      importance,
+      completed,
     });
-    res.status(200).json({
-      message: `Nota ${noteTitle} atualizada com sucesso!`,
-    });
+
+    const updatedNote = this.notesService.getById(id);
+    res.status(200).json(updatedNote);
   };
 
   delete = (req: Request, res: Response) => {

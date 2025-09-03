@@ -1,13 +1,13 @@
 import { NotFoundError } from "../../shared/erros/not-found.error";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
-import { INotes } from "./notes.interface";
+import { INote } from "./notes.interface";
 import { NotesRepository } from "./notes.repository";
 
 export class NotesService {
   constructor(private notesRepository: NotesRepository) {}
 
-  getAll(): INotes[] {
+  getAll(): INote[] {
     const notes = this.notesRepository.getAll();
     return notes;
   }
@@ -24,17 +24,17 @@ export class NotesService {
     return this.notesRepository.create(note);
   }
 
-  update(id: string, note: UpdateNoteSchema) {
+  update(id: string, note: UpdateNoteSchema): INote {
     const noteExists = this.notesRepository.findById(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }
-    const noteTitle = this.notesRepository.update(id, note);
+    const updatedNote = this.notesRepository.update(id, note);
 
-    return noteTitle;
+    return updatedNote;
   }
 
-  delete(id: string) {
+  delete(id: string): void {
     const noteExists = this.notesRepository.findById(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");

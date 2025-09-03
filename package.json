@@ -9,7 +9,7 @@
     ]
   },
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/main.ts | pino-pretty",
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
     "build": "tsc",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write src/**/*.ts",

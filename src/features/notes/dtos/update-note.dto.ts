@@ -6,7 +6,9 @@ export const updateNoteSchema = z
       .string()
       .min(3, "O título deve ter no mínimo 3 caracteres.")
       .optional(),
-    content: z.string().optional(),
+    description: z.string().optional(),
+    importance: z.enum(["baixo", "medio", "alto"]).optional(),
+    completed: z.union([z.literal(0), z.literal(1)]).optional(),
   })
   .strict();
 
