@@ -32,10 +32,15 @@ const notesController = new NotesController(notesService);
  *                $ref: "#/components/schemas/Note"
  *            example:
  *              - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
- *                title: "Minha nota"
- *                description: "Descrição da minha nota"
+ *                title: "Minha nota 1"
+ *                description: "Descrição da minha nota 1"
  *                importance: "baixo"
  *                completed: 0
+ *              - id: "3fa85f64-5717-ds2e-a23d-2c963f66afa6"
+ *                title: "Minha nota 2"
+ *                description: "Descrição da minha nota 2"
+ *                importance: "media"
+ *                completed: 1
  */
 notesRouter.get("/", notesController.getAll);
 

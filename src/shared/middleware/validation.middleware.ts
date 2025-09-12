@@ -8,8 +8,9 @@ type ValidationSchemas = {
   query?: z.ZodType;
 };
 
-export function validate(schemas: ValidationSchemas) {
-  return async (req: Request, _res: Response, next: NextFunction) => {
+const validate =
+  (schemas: ValidationSchemas) =>
+  async (req: Request, _res: Response, next: NextFunction) => {
     const errors: { path: string; message: string }[] = [];
     try {
       if (schemas.body) await schemas.body.parseAsync(req.body);
@@ -31,4 +32,5 @@ export function validate(schemas: ValidationSchemas) {
       next(error);
     }
   };
-}
+
+export { validate };
