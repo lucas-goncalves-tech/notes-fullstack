@@ -8,9 +8,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "rootDir": "src",
     "outDir": "dist",
     "noEmitOnError": true
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "src/**/*.sql"],
   "exclude": ["**/*.spec.ts", "node_modules", "dist"]
 }

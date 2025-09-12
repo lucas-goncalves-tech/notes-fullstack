@@ -1,4 +1,7 @@
 import { Router } from "express";
+
+import { db } from "../../database/connection";
+
 import { NotesController } from "./notes.controller";
 import { validate } from "../../shared/middleware/validation.middleware";
 import { createNoteSchema } from "./dtos/create-note.dto";
@@ -8,7 +11,7 @@ import { NotesService } from "./notes.service";
 import { NotesRepository } from "./notes.repository";
 
 const notesRouter = Router();
-const notesService = new NotesService(new NotesRepository());
+const notesService = new NotesService(new NotesRepository(db));
 const notesController = new NotesController(notesService);
 
 /**
@@ -27,15 +30,12 @@ const notesController = new NotesController(notesService);
  *              type: array
  *              items:
  *                $ref: "#/components/schemas/Note"
- *            example: [
- *                 {
- *                   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
- *                   "title": "Minha nota",
- *                   "description": "Descrição da minha nota",
- *                   "importance": "baixo",
- *                   "completed": 0,
- *                 }
- *               ]
+ *            example:
+ *              - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+ *                title: "Minha nota"
+ *                description: "Descrição da minha nota"
+ *                importance: "baixo"
+ *                completed: 0
  */
 notesRouter.get("/", notesController.getAll);
 
@@ -59,23 +59,19 @@ notesRouter.get("/", notesController.getAll);
  *        content:
  *          application/json:
  *            schema:
- *                $ref: '#/components/schemas/Note'
- *            example: [
- *                 {
- *                   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
- *                   "title": "Minha nota",
- *                   "content": "Descrição da minha nota",
- *                   "created_at": "2025-09-02 14:57:09",
- *                   "updated_at": "2025-09-02 14:57:09"
- *                 }
- *               ]
+ *              $ref: '#/components/schemas/Note'
+ *            example:
+ *              id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+ *              title: "Minha nota"
+ *              description: "Descrição da minha nota"
+ *              importance: "baixo"
+ *              completed: 0
  *      404:
  *        description: Mensagem de nota não encontrada.
  *        content:
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/NotFound"
- *
  */
 notesRouter.get("/:id", notesController.getById);
 
@@ -86,31 +82,35 @@ notesRouter.get("/:id", notesController.getById);
  *    summary: Cria uma nova nota.
  *    tags:
  *      - Notas
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        application/json:
+ *          schema:
+ *            $ref: '#/components/schemas/CreateNote'
+ *          example:
+ *            title: 'Minha nova nota'
+ *            description: 'Descrição da minha nota'
+ *            importance: 'baixo'
  *    responses:
  *      201:
  *        description: Nota criada com sucesso
  *        content:
  *          application/json:
  *            schema:
- *              $ref: "#/components/schemas/CreateResponse"
+ *              $ref: "#/components/schemas/Note"
+ *            example:
+ *              id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+ *              title: "Minha nova nota"
+ *              description: "Descrição da minha nota"
+ *              importance: "baixo"
+ *              completed: 0
  *      400:
  *        description: Error de validação
  *        content:
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/BadRequest"
- *    requestBody:
- *      required: true
- *      content:
- *        application/json:
- *          schema:
- *            allOf:
- *              - $ref: '#/components/schemas/CreateNote'
- *              - type: object
- *                example:
- *                  title: 'Minha nova nota'
- *                  description: 'Descrição da minha nota'
- *                  importance: 'baixo'
  */
 notesRouter.post(
   "/",
@@ -150,7 +150,13 @@ notesRouter.post(
  *        content:
  *          application/json:
  *            schema:
- *              $ref: "#/components/schemas/UpdateResponse"
+ *              $ref: "#/components/schemas/Note"
+ *            example:
+ *              id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+ *              title: "Novo titulo da minha nota"
+ *              description: "Nova descrição da nota"
+ *              importance: "medio"
+ *              completed: 1
  *      400:
  *        description: Error de validação
  *        content:

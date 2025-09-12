@@ -1,20 +1,21 @@
-import { db } from "../../database/connection";
-
+import { Database } from "better-sqlite3";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
 import { INote } from "./notes.interface";
 import { randomUUID } from "crypto";
 
 export class NotesRepository {
+  constructor(private db: Database) {}
+
   getAll(): INote[] {
     const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
-    const stmt = db.prepare(sql);
+    const stmt = this.db.prepare(sql);
     return stmt.all() as INote[];
   }
 
   findById(id: string): INote | undefined {
     const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
-    const stmt = db.prepare(sql);
+    const stmt = this.db.prepare(sql);
     return stmt.get(id) as INote | undefined;
   }
 
@@ -23,7 +24,7 @@ export class NotesRepository {
   ): Pick<INote, "id" | "description" | "title" | "importance" | "completed"> {
     const id = randomUUID();
     const sql = `INSERT INTO notes ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
-    const stmt = db.prepare(sql);
+    const stmt = this.db.prepare(sql);
 
     try {
       stmt.run(id, note.title, note.description, note.importance);
@@ -66,7 +67,7 @@ export class NotesRepository {
     SET ${fields.join(", ")} 
     WHERE "id" = ?;`;
 
-    const stmt = db.prepare(sql);
+    const stmt = this.db.prepare(sql);
     try {
       stmt.run(...values, id);
 
@@ -80,7 +81,7 @@ export class NotesRepository {
 
   delete(id: string): void {
     const sql = `DELETE FROM "notes" WHERE "id" = ?;`;
-    const stmt = db.prepare(sql);
+    const stmt = this.db.prepare(sql);
 
     try {
       stmt.run(id);
