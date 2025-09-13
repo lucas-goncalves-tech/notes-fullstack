@@ -30,11 +30,11 @@ describe("TasksRepository Integration Tests", () => {
   });
 
   it("should create a new note and find it by id", () => {
-    const noteData = {
+    const noteData: CreateNoteSchema = {
       title: "Test Note",
       description: "Test Description",
       importance: "baixo",
-    } as CreateNoteSchema;
+    };
 
     const newNote = notesRepository.create(noteData);
     const foundNote = notesRepository.findById(newNote.id);
@@ -53,16 +53,16 @@ describe("TasksRepository Integration Tests", () => {
   });
 
   it("should return all created notes", () => {
-    const noteData1 = {
+    const noteData1: CreateNoteSchema = {
       title: "Test Note 1",
       description: "Test Description 1",
       importance: "baixo",
-    } as CreateNoteSchema;
-    const noteData2 = {
+    };
+    const noteData2: CreateNoteSchema = {
       title: "Test Note 2",
       description: "Test Description 2",
       importance: "baixo",
-    } as CreateNoteSchema;
+    };
 
     const newNote1 = notesRepository.create(noteData1);
     const newNote2 = notesRepository.create(noteData2);
@@ -75,17 +75,17 @@ describe("TasksRepository Integration Tests", () => {
   });
 
   it("should update an existing note", () => {
-    const noteData = {
+    const noteData: CreateNoteSchema = {
       title: "Test Note 1",
       description: "Test Description 1",
       importance: "baixo",
-    } as CreateNoteSchema;
+    };
 
-    const updatedData = {
+    const updatedData: UpdateNoteSchema = {
       title: "Updated Note",
       description: "Updated description",
       completed: 1,
-    } as UpdateNoteSchema;
+    };
 
     const newNote = notesRepository.create(noteData);
     const updatedNote = notesRepository.update(newNote.id, updatedData);
@@ -96,11 +96,11 @@ describe("TasksRepository Integration Tests", () => {
   });
 
   it("sould delete a note", () => {
-    const noteData = {
+    const noteData: CreateNoteSchema = {
       title: "Test Note 1",
       description: "Test Description 1",
       importance: "baixo",
-    } as CreateNoteSchema;
+    };
 
     const newNote = notesRepository.create(noteData);
     notesRepository.delete(newNote.id);

@@ -11,18 +11,22 @@ const appliedMigrations = (
 ).map((row) => row.filename);
 
 for (const file of migrationFiles) {
-  if (appliedMigrations.includes(file)) {
-    console.log(`Migration already applied: ${file}`);
-    continue;
-  }
-  const sql = fs.readFileSync(path.join(migrationDir, file), "utf-8");
-  db.exec(sql);
-  db.prepare(
-    `INSERT INTO _migrations (filename, applied_at)
+  try {
+    if (appliedMigrations.includes(file)) {
+      console.log(`Migration already applied: ${file}`);
+      continue;
+    }
+    const sql = fs.readFileSync(path.join(migrationDir, file), "utf-8");
+    db.exec(sql);
+    db.prepare(
+      `INSERT INTO _migrations (filename, applied_at)
     VALUES (?, CURRENT_TIMESTAMP)`,
-  ).run(file);
+    ).run(file);
 
-  console.log(`Migration applied: ${file}`);
+    console.log(`Migration applied: ${file}`);
+  } catch (error) {
+    throw error;
+  }
 }
 
 console.log("All migrations applied successfully.");

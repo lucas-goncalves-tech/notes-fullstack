@@ -11,6 +11,8 @@ if (!rawPath) {
 const dbPath = path.resolve(rawPath);
 const db = new Database(dbPath);
 
+db.exec(`PRAGMA foreign_keys = ON`);
+
 db.exec(`
   CREATE TABLE IF NOT EXISTS _migrations (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

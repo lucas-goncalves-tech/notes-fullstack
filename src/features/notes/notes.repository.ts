@@ -24,9 +24,9 @@ export class NotesRepository {
   ): Pick<INote, "id" | "description" | "title" | "importance" | "completed"> {
     const id = randomUUID();
     const sql = `INSERT INTO notes ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
-    const stmt = this.db.prepare(sql);
 
     try {
+      const stmt = this.db.prepare(sql);
       stmt.run(id, note.title, note.description, note.importance);
       return {
         id,
