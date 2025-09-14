@@ -1,32 +1,45 @@
-import { Database } from "better-sqlite3";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
 import { INote } from "./notes.interface";
 import { randomUUID } from "crypto";
+import { inject, injectable } from "tsyringe";
+import { ConnectionManager } from "../../database/pool";
 
+@injectable()
 export class NotesRepository {
-  constructor(private db: Database) {}
+  constructor(
+    @inject("ConnectionManager") private connectionManager: ConnectionManager,
+  ) {}
 
   getAll(): INote[] {
-    const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
-    const stmt = this.db.prepare(sql);
-    return stmt.all() as INote[];
+    const db = this.connectionManager.acquire();
+    try {
+      const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
+      const stmt = db.prepare(sql);
+      return stmt.all() as INote[];
+    } finally {
+      this.connectionManager.release(db);
+    }
   }
 
   findById(id: string): INote | undefined {
-    const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
-    const stmt = this.db.prepare(sql);
-    return stmt.get(id) as INote | undefined;
+    const db = this.connectionManager.acquire();
+    try {
+      const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
+      const stmt = db.prepare(sql);
+      return stmt.get(id) as INote | undefined;
+    } finally {
+      this.connectionManager.release(db);
+    }
   }
 
-  create(
-    note: CreateNoteSchema,
-  ): Pick<INote, "id" | "description" | "title" | "importance" | "completed"> {
+  create(note: CreateNoteSchema): Omit<INote, "updated_at" | "created_at"> {
+    const db = this.connectionManager.acquire();
     const id = randomUUID();
-    const sql = `INSERT INTO notes ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
+    const sql = `INSERT INTO "notes" ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
 
     try {
-      const stmt = this.db.prepare(sql);
+      const stmt = db.prepare(sql);
       stmt.run(id, note.title, note.description, note.importance);
       return {
         id,
@@ -38,10 +51,13 @@ export class NotesRepository {
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
+    } finally {
+      this.connectionManager.release(db);
     }
   }
 
   update(id: string, note: UpdateNoteSchema): INote {
+    const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
 
@@ -67,7 +83,7 @@ export class NotesRepository {
     SET ${fields.join(", ")} 
     WHERE "id" = ?;`;
 
-    const stmt = this.db.prepare(sql);
+    const stmt = db.prepare(sql);
     try {
       stmt.run(...values, id);
 
@@ -76,18 +92,23 @@ export class NotesRepository {
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
+    } finally {
+      this.connectionManager.release(db);
     }
   }
 
   delete(id: string): void {
+    const db = this.connectionManager.acquire();
     const sql = `DELETE FROM "notes" WHERE "id" = ?;`;
-    const stmt = this.db.prepare(sql);
+    const stmt = db.prepare(sql);
 
     try {
       stmt.run(id);
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
+    } finally {
+      this.connectionManager.release(db);
     }
   }
 }

@@ -1,18 +1,14 @@
 import { Router } from "express";
 
-import { db } from "../../database/connection";
-
 import { NotesController } from "./notes.controller";
 import { validate } from "../../shared/middleware/validation.middleware";
 import { createNoteSchema } from "./dtos/create-note.dto";
 import { updateNoteSchema } from "./dtos/update-note.dto";
 import { noteParamsSchema } from "./dtos/note-params.dto";
-import { NotesService } from "./notes.service";
-import { NotesRepository } from "./notes.repository";
+import { container } from "tsyringe";
 
 const notesRouter = Router();
-const notesService = new NotesService(new NotesRepository(db));
-const notesController = new NotesController(notesService);
+const notesController = container.resolve(NotesController);
 
 /**
  * @openapi

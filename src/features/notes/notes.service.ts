@@ -1,11 +1,15 @@
+import { inject, injectable } from "tsyringe";
 import { NotFoundError } from "../../shared/erros/not-found.error";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
 import { INote } from "./notes.interface";
 import { NotesRepository } from "./notes.repository";
 
+@injectable()
 export class NotesService {
-  constructor(private notesRepository: NotesRepository) {}
+  constructor(
+    @inject("NotesRepository") private notesRepository: NotesRepository,
+  ) {}
 
   getAll(): INote[] {
     const notes = this.notesRepository.getAll();

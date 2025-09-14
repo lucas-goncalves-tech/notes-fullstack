@@ -1,4 +1,6 @@
 import "./database/migrate";
+import "reflect-metadata";
+import "./shared/config/container";
 
 import express from "express";
 import cors from "cors";

@@ -2,9 +2,11 @@ import { Request, Response } from "express";
 import { NotesService } from "./notes.service";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
+import { inject, injectable } from "tsyringe";
 
+@injectable()
 export class NotesController {
-  constructor(private notesService: NotesService) {}
+  constructor(@inject("NotesService") private notesService: NotesService) {}
 
   getAll = (_req: Request, res: Response): void => {
     const notes = this.notesService.getAll();

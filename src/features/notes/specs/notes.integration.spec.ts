@@ -1,9 +1,12 @@
+import "reflect-metadata";
+
 import BetterSqlite3, { Database } from "better-sqlite3";
 import { NotesRepository } from "../notes.repository";
 import fs from "node:fs";
 import path from "node:path";
 import { CreateNoteSchema } from "../dtos/create-note.dto";
 import { UpdateNoteSchema } from "../dtos/update-note.dto";
+import { ConnectionManager } from "../../../database/pool";
 
 describe("TasksRepository Integration Tests", () => {
   let db: Database;
@@ -18,7 +21,8 @@ describe("TasksRepository Integration Tests", () => {
       const sql = fs.readFileSync(path.join(migrationDir, file), "utf-8");
       db.exec(sql);
     }
-    notesRepository = new NotesRepository(db);
+    const connectionManager = new ConnectionManager(db);
+    notesRepository = new NotesRepository(connectionManager);
   });
 
   afterAll(() => {

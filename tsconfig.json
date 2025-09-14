@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2022", // precisa ser ES2022 ou maior
+    "experimentalDecorators": true, // habilita decorators
+    "emitDecoratorMetadata": true, // necessário para tsyringe
+    "useDefineForClassFields": false, // evita conflito em decorators
     "module": "commonjs",
     "moduleResolution": "Node",
     "sourceMap": true,
