@@ -1,11 +1,7 @@
 const config = {
   preset: "ts-jest",
   testEnvironment: "node",
-  testMatch: ["**/specs/**/*.spec.ts"],
-  roots: ["<rootDir>/src"],
-  transform: {
-    "^.+\\.ts$": ["ts-jest", { tsconfig: "./tsconfig.json" }],
-  },
+  testMatch: ["<rootDir>/src/**/specs/**/*.spec.ts"],
 };
 
 export default config;

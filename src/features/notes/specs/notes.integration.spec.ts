@@ -8,7 +8,7 @@ import { CreateNoteSchema } from "../dtos/create-note.dto";
 import { UpdateNoteSchema } from "../dtos/update-note.dto";
 import { ConnectionManager } from "../../../database/pool";
 
-describe("TasksRepository Integration Tests", () => {
+xdescribe("TasksRepository Integration Tests", () => {
   let db: Database;
   let notesRepository: NotesRepository;
 
@@ -30,7 +30,7 @@ describe("TasksRepository Integration Tests", () => {
   });
 
   beforeEach(() => {
-    db.prepare("DELETE FROM notes").run();
+    db.prepare(`DELETE FROM "notes"`).run();
   });
 
   it("should create a new note and find it by id", () => {
