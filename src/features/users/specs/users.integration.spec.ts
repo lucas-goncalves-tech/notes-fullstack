@@ -52,4 +52,94 @@ describe("UserRepository Integration Tests", () => {
 
     expect(users).toEqual([]);
   });
+
+  it("should return all users when users exist", () => {
+    const userData1 = {
+      name: "John Doe",
+      email: "john@test.com",
+    };
+
+    const userData2 = {
+      name: "Jane Smith",
+      email: "jane@test.com",
+    };
+
+    usersRepository.create(userData1);
+    usersRepository.create(userData2);
+
+    const users = usersRepository.getAll();
+
+    expect(users).toHaveLength(2);
+    expect(users).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining(userData1),
+        expect.objectContaining(userData2),
+      ]),
+    );
+  });
+
+  it("should update a user", () => {
+    const userData = {
+      name: "John Doe",
+      email: "john@test.com",
+    };
+
+    const createdUser = usersRepository.create(userData);
+
+    const updateData = {
+      name: "John Updated",
+      email: "john.updated@test.com",
+    };
+
+    const updatedUser = usersRepository.update(createdUser.id, updateData);
+
+    expect(updatedUser).toBeDefined();
+    expect(updatedUser.name).toBe(updateData.name);
+    expect(updatedUser.email).toBe(updateData.email);
+    expect(updatedUser.id).toBe(createdUser.id);
+    // Check that updated_at is more recent than created_at
+    expect(new Date(updatedUser.updated_at).getTime()).toBeGreaterThanOrEqual(
+      new Date(createdUser.created_at).getTime(),
+    );
+  });
+
+  it("should delete a user", () => {
+    const userData = {
+      name: "John Doe",
+      email: "john@test.com",
+    };
+
+    const createdUser = usersRepository.create(userData);
+
+    // Verify user exists
+    let foundUser = usersRepository.getByID(createdUser.id);
+    expect(foundUser).toBeDefined();
+
+    // Delete user
+    usersRepository.delete(createdUser.id);
+
+    // Verify user is deleted
+    foundUser = usersRepository.getByID(createdUser.id);
+    expect(foundUser).toBeUndefined();
+  });
+
+  it("should handle updating a non-existent user", () => {
+    const updateData = {
+      name: "Non Existent",
+      email: "nonexistent@test.com",
+    };
+
+    // This should not throw an error, but return undefined or handle gracefully
+    // Since the implementation doesn't check if user exists, we'll just verify it doesn't throw
+    expect(() => {
+      usersRepository.update("non-existent-id", updateData);
+    }).not.toThrow();
+  });
+
+  it("should handle deleting a non-existent user", () => {
+    // This should not throw an error
+    expect(() => {
+      usersRepository.delete("non-existent-id");
+    }).not.toThrow();
+  });
 });

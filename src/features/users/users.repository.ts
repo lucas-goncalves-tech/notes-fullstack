@@ -76,7 +76,7 @@ export class UsersRepository {
     // Always update the updated_at timestamp
     fields.push("updated_at = CURRENT_TIMESTAMP");
 
-    const sql = `UPDATE "notes" 
+    const sql = `UPDATE "users" 
       SET ${fields.join(", ")} 
       WHERE "id" = ?;`;
 
