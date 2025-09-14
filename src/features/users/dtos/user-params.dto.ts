@@ -1,7 +1,9 @@
 import z from "zod";
 
-export const idParamSchema = z.object({
-  id: z.uuid(),
-});
+export const userParamsSchema = z
+  .object({
+    id: z.uuid(),
+  })
+  .strict();
 
-export type IdParamSchema = z.infer<typeof idParamSchema>;
+export type UserParamsSchema = z.infer<typeof userParamsSchema>;
