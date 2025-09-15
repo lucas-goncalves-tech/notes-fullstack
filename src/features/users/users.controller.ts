@@ -31,12 +31,12 @@ export class UsersController {
    * @param req Request
    * @param res Response with UserSchema array
    */
-  // getAll = (req: Request, res: Response<UserSchemaType[]>) => {
-  //   // TODO: Task list for implementation
-  //   // 1. Call service to get all users
-  //   // 2. Handle any errors
-  //   // 3. Return users array with 200 status
-  // };
+  getAll = async (req: Request, res: Response) => {
+    // TODO: Task list for implementation
+    // 1. Call service to get all users
+    const AllUsers = await this.usersService.getAll();
+    res.json(AllUsers);
+  };
 
   /**
    * Get user by ID

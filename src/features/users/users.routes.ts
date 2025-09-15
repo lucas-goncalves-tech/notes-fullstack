@@ -53,7 +53,7 @@ usersRouter.post(
 
 /**
  * @swagger
- * /users:
+ * /api/users:
  *   get:
  *     summary: Get all users
  *     tags: [Users]
@@ -69,7 +69,7 @@ usersRouter.post(
  *       500:
  *         description: Internal server error
  */
-//usersRouter.get("/", usersController.getAll);
+usersRouter.get("/", usersController.getAll);
 
 /**
  * @swagger

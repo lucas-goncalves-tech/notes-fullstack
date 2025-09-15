@@ -6,6 +6,7 @@ import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
 import { ConflictError } from "../../shared/erros/conflict.error";
 import { UserSchemaType } from "./dtos/user.dto";
+import { InternalServerError } from "../../shared/erros/interval-server.error";
 
 @injectable()
 export class UsersService {
@@ -42,5 +43,13 @@ export class UsersService {
     } finally {
       this.connectionManager.release(db);
     }
+  }
+
+  async getAll(): Promise<UserSchemaType[]> {
+    const allUsers = this.usersRepository.getAll();
+    if (!Array.isArray(allUsers)) {
+      throw new InternalServerError();
+    }
+    return allUsers;
   }
 }
