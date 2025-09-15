@@ -2,8 +2,8 @@ import { inject, injectable } from "tsyringe";
 import { NotFoundError } from "../../shared/erros/not-found.error";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
-import { INote } from "./notes.interface";
 import { NotesRepository } from "./notes.repository";
+import { NoteSchemaType } from "./dtos/note.dto";
 
 @injectable()
 export class NotesService {
@@ -11,13 +11,13 @@ export class NotesService {
     @inject("NotesRepository") private notesRepository: NotesRepository,
   ) {}
 
-  getAll(): INote[] {
+  getAll(): NoteSchemaType[] {
     const notes = this.notesRepository.getAll();
     return notes;
   }
 
   getById(id: string) {
-    const note = this.notesRepository.findById(id);
+    const note = this.notesRepository.getByID(id);
     if (!note) {
       throw new NotFoundError("Nota");
     }
@@ -28,8 +28,8 @@ export class NotesService {
     return this.notesRepository.create(note);
   }
 
-  update(id: string, note: UpdateNoteSchema): INote {
-    const noteExists = this.notesRepository.findById(id);
+  update(id: string, note: UpdateNoteSchema): NoteSchemaType {
+    const noteExists = this.notesRepository.getByID(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }
@@ -39,7 +39,7 @@ export class NotesService {
   }
 
   delete(id: string): void {
-    const noteExists = this.notesRepository.findById(id);
+    const noteExists = this.notesRepository.getByID(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }

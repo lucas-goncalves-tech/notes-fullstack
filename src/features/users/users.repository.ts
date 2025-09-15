@@ -1,6 +1,6 @@
 import { CreateUserSchema } from "./dtos/create-user.dto";
 import { randomUUID } from "crypto";
-import { UserSchema } from "./dtos/user.dto";
+import { userSchema, UserSchemaType } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
 import { UpdateUserSchema } from "./dtos/update-user.dto";
@@ -11,11 +11,11 @@ export class UsersRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  getAll(): UserSchema[] {
+  getAll(): UserSchemaType[] {
     const db = this.connectionManager.acquire();
     try {
       const stmt = db.prepare(`SELECT * FROM "users"`);
-      return stmt.all() as UserSchema[];
+      return stmt.all() as UserSchemaType[];
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -24,12 +24,12 @@ export class UsersRepository {
     }
   }
 
-  getByID(id: string): UserSchema {
+  getByID(id: string): UserSchemaType | undefined {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "id" = ?`;
     try {
       const stmt = db.prepare(sql);
-      return stmt.get(id) as UserSchema;
+      return stmt.get(id) as UserSchemaType | undefined;
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -38,7 +38,21 @@ export class UsersRepository {
     }
   }
 
-  create(user: CreateUserSchema): UserSchema {
+  getByEmail(email: string): UserSchemaType | undefined {
+    const db = this.connectionManager.acquire();
+    const sql = `SELECT * FROM "users" WHERE "email" = ?`;
+    try {
+      const stmt = db.prepare(sql);
+      return stmt.get(email) as UserSchemaType | undefined;
+    } catch (error) {
+      if (error instanceof Error) console.error("SQL error: ", error.message);
+      throw error;
+    } finally {
+      this.connectionManager.release(db);
+    }
+  }
+
+  create(user: CreateUserSchema): UserSchemaType {
     const db = this.connectionManager.acquire();
     const UUID = randomUUID();
     const sql = `INSERT INTO "users" ("id", "name", "email") VALUES(?,?,?)`;
@@ -46,7 +60,7 @@ export class UsersRepository {
       const stmt = db.prepare(sql);
       stmt.run(UUID, user.name, user.email);
 
-      return this.getByID(UUID);
+      return userSchema.parse(this.getByID(UUID));
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -55,12 +69,12 @@ export class UsersRepository {
     }
   }
 
-  update(id: string, user: UpdateUserSchema): UserSchema {
+  update(id: string, user: UpdateUserSchema): UserSchemaType {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
 
-    const fieldMap: Partial<UserSchema> = {
+    const fieldMap: Partial<UserSchemaType> = {
       name: "name",
       email: "email",
     };

@@ -11,7 +11,7 @@ const notesRouter = Router();
 const notesController = container.resolve(NotesController);
 
 /**
- * @openapi
+ * @swagger
  * /api/notes:
  *   get:
  *    tags:
@@ -41,7 +41,7 @@ const notesController = container.resolve(NotesController);
 notesRouter.get("/", notesController.getAll);
 
 /**
- * @openapi
+ * @swagger
  * /api/notes/{id}:
  *  get:
  *    tags:
@@ -77,7 +77,7 @@ notesRouter.get("/", notesController.getAll);
 notesRouter.get("/:id", notesController.getById);
 
 /**
- * @openapi
+ * @swagger
  * /api/notes:
  *  post:
  *    summary: Cria uma nova nota.
@@ -88,11 +88,7 @@ notesRouter.get("/:id", notesController.getById);
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/CreateNote'
- *          example:
- *            title: 'Minha nova nota'
- *            description: 'Descrição da minha nota'
- *            importance: 'baixo'
+ *            $ref: '#/components/schemas/CreateNoteResponse'
  *    responses:
  *      201:
  *        description: Nota criada com sucesso
@@ -122,7 +118,7 @@ notesRouter.post(
 );
 
 /**
- * @openapi
+ * @swagger
  * /api/notes/{id}:
  *  put:
  *    summary: Atualizar uma nota com base no ID.
@@ -151,13 +147,7 @@ notesRouter.post(
  *        content:
  *          application/json:
  *            schema:
- *              $ref: "#/components/schemas/Note"
- *            example:
- *              id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
- *              title: "Novo titulo da minha nota"
- *              description: "Nova descrição da nota"
- *              importance: "medio"
- *              completed: 1
+ *              $ref: "#/components/schemas/UpdateNoteResponse"
  *      400:
  *        description: Error de validação
  *        content:
@@ -181,7 +171,7 @@ notesRouter.put(
 );
 
 /**
- * @openapi
+ * @swagger
  * /api/notes/{id}:
  *  delete:
  *    summary: Deletar uma nota com base no ID.

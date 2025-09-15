@@ -10,4 +10,4 @@ export const noteSchema = z.object({
   updated_at: z.iso.datetime(),
 });
 
-export type NoteSchema = z.infer<typeof noteSchema>;
+export type NoteSchemaType = z.infer<typeof noteSchema>;

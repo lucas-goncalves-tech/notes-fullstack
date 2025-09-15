@@ -4,6 +4,7 @@ import { db } from "../../database/connection";
 import { NotesRepository } from "../../features/notes/notes.repository";
 import { NotesService } from "../../features/notes/notes.service";
 import { UsersRepository } from "../../features/users/users.repository";
+import { UsersService } from "../../features/users/users.service";
 
 // --- REGISTO DE INSTÂNCIAS (SINGLETONS) ---
 const connectionManager = new ConnectionManager(db);
@@ -12,6 +13,8 @@ container.register<ConnectionManager>("ConnectionManager", {
 });
 
 // --- REGISTO DE CLASSES ---
+
+// - Notes -
 container.register("NotesRepository", {
   useClass: NotesRepository,
 });
@@ -20,6 +23,12 @@ container.register("NotesService", {
   useClass: NotesService,
 });
 
+// - Users -
+
 container.register("UsersRepository", {
   useClass: UsersRepository,
+});
+
+container.register("UsersService", {
+  useClass: UsersService,
 });

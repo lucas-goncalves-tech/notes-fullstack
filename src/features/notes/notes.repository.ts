@@ -1,9 +1,9 @@
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
-import { INote } from "./notes.interface";
 import { randomUUID } from "crypto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
+import { noteSchema, NoteSchemaType } from "./dtos/note.dto";
 
 @injectable()
 export class NotesRepository {
@@ -11,43 +11,43 @@ export class NotesRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  getAll(): INote[] {
+  getAll(): NoteSchemaType[] {
     const db = this.connectionManager.acquire();
     try {
       const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
       const stmt = db.prepare(sql);
-      return stmt.all() as INote[];
+      return stmt.all() as NoteSchemaType[];
     } finally {
       this.connectionManager.release(db);
     }
   }
 
-  findById(id: string): INote | undefined {
+  getByID(id: string): NoteSchemaType | undefined {
     const db = this.connectionManager.acquire();
     try {
       const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
       const stmt = db.prepare(sql);
-      return stmt.get(id) as INote | undefined;
+      return stmt.get(id) as NoteSchemaType | undefined;
     } finally {
       this.connectionManager.release(db);
     }
   }
 
-  create(note: CreateNoteSchema): Omit<INote, "updated_at" | "created_at"> {
+  async create(note: CreateNoteSchema): Promise<NoteSchemaType> {
     const db = this.connectionManager.acquire();
-    const id = randomUUID();
-    const sql = `INSERT INTO "notes" ("id", "title", "description", "importance") VALUES (?, ?, ?, ?);`;
+    const noteID = randomUUID();
+    const sql = `INSERT INTO "notes" ("id", "title", "description", "importance", "user_id") VALUES (?, ?, ?, ?);`;
 
     try {
       const stmt = db.prepare(sql);
-      stmt.run(id, note.title, note.description, note.importance);
-      return {
-        id,
-        title: note.title,
-        description: note.description,
-        importance: note.importance,
-        completed: 0,
-      };
+      stmt.run(
+        noteID,
+        note.title,
+        note.description,
+        note.importance,
+        note.userID,
+      );
+      return noteSchema.parseAsync(this.getByID(noteID));
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
@@ -56,7 +56,7 @@ export class NotesRepository {
     }
   }
 
-  update(id: string, note: UpdateNoteSchema): INote {
+  update(id: string, note: UpdateNoteSchema): NoteSchemaType {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
@@ -88,7 +88,7 @@ export class NotesRepository {
       stmt.run(...values, id);
 
       // Return the updated note
-      return this.findById(id)!;
+      return noteSchema.parse(this.getByID(id));
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;

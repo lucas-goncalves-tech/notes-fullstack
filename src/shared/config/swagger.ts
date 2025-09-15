@@ -3,6 +3,10 @@ import z from "zod";
 import { noteSchema } from "../../features/notes/dtos/note.dto";
 import { createNoteSchema } from "../../features/notes/dtos/create-note.dto";
 import { updateNoteSchema } from "../../features/notes/dtos/update-note.dto";
+import { userSchema } from "../../features/users/dtos/user.dto";
+import { createUserSchema } from "../../features/users/dtos/create-user.dto";
+import { updateUserSchema } from "../../features/users/dtos/update-user.dto";
+import { userParamsSchema } from "../../features/users/dtos/user-params.dto";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -17,12 +21,16 @@ const options: swaggerJSDoc.Options = {
         name: "Notas",
         description: "Operações relacionadas a notas",
       },
+      {
+        name: "Users",
+        description: "Operações relacionadas a usuários",
+      },
     ],
     components: {
       schemas: {
         Note: z.toJSONSchema(noteSchema),
         CreateNote: z.toJSONSchema(createNoteSchema),
-        CreateResponse: {
+        CreateNoteResponse: {
           type: "object",
           properties: {
             message: {
@@ -40,12 +48,55 @@ const options: swaggerJSDoc.Options = {
           },
         },
         UpdateNote: z.toJSONSchema(updateNoteSchema),
-        UpdateResponse: {
+        UpdateNoteResponse: {
           type: "object",
           properties: {
             message: {
               type: "string",
-              example: "Nota {title} atualizada com sucesso",
+              example: {
+                id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                title: "Novo titulo da minha nota",
+                description: "Nova descrição da nota",
+                importance: "medio",
+                completed: 1,
+              },
+            },
+          },
+        },
+        User: z.toJSONSchema(userSchema),
+        CreateUser: z.toJSONSchema(createUserSchema),
+        CreateResponseUser: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: [
+                {
+                  id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                  name: "John Doe",
+                  email: "john.doe@example.com",
+                },
+              ],
+            },
+          },
+        },
+        UpdateUser: z.toJSONSchema(updateUserSchema),
+        UserParams: z.toJSONSchema(userParamsSchema),
+        UpdateResponseUser: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: "Usuário {name} atualizado com sucesso",
+            },
+          },
+        },
+        ConflictError: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: "Recurso já existe",
             },
           },
         },
@@ -83,10 +134,22 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
+        InternalServerError: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: "Erro interno do servidor",
+            },
+          },
+        },
       },
     },
   },
-  apis: ["./src/features/notes/notes.route.ts"],
+  apis: [
+    "./src/features/notes/notes.route.ts",
+    "./src/features/users/users.routes.ts",
+  ],
 };
 
 export const swaggerSpec = swaggerJSDoc(options);
