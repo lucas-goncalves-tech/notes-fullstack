@@ -73,7 +73,7 @@ usersRouter.get("/", usersController.getAll);
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
@@ -106,11 +106,11 @@ usersRouter.get("/", usersController.getAll);
  *       500:
  *         description: Internal server error
  */
-//usersRouter.get("/:id", usersController.getById);
+usersRouter.get("/:id", usersController.getById);
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   put:
  *     summary: Update a user by ID
  *     tags: [Users]
@@ -149,11 +149,11 @@ usersRouter.get("/", usersController.getAll);
  *       500:
  *         description: Internal server error
  */
-//usersRouter.put("/:id", usersController.update);
+usersRouter.put("/:id", usersController.update);
 
 /**
  * @swagger
- * /users/{id}:
+ * /api/users/{id}:
  *   delete:
  *     summary: Delete a user by ID
  *     tags: [Users]

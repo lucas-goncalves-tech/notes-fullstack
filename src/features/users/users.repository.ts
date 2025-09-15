@@ -69,7 +69,7 @@ export class UsersRepository {
     }
   }
 
-  update(id: string, user: UpdateUserSchema): UserSchemaType {
+  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
@@ -94,8 +94,8 @@ export class UsersRepository {
       SET ${fields.join(", ")} 
       WHERE "id" = ?;`;
 
-    const stmt = db.prepare(sql);
     try {
+      const stmt = db.prepare(sql);
       stmt.run(...values, id);
 
       // Return the updated note

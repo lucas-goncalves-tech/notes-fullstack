@@ -5,6 +5,8 @@ import { CreateUserSchema } from "./dtos/create-user.dto";
 import { UserSchemaType } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { UsersService } from "./users.service";
+import { UserParamsSchema } from "./dtos/user-params.dto";
+import { UpdateUserSchema } from "./dtos/update-user.dto";
 
 @injectable()
 export class UsersController {
@@ -43,34 +45,39 @@ export class UsersController {
    * @param req Request with UserParamsSchema params
    * @param res Response with UserSchema
    */
-  // getById = (req: Request<UserParamsSchema>, res: Response<UserSchemaType>) => {
-  //   // TODO: Task list for implementation
-  //   // 1. Validate request params using userParamsSchema
-  //   // 2. Call service to get user by ID
-  //   // 3. Handle validation errors
-  //   // 4. Handle user not found case
-  //   // 5. Return user with 200 status
-  //   // 6. Handle any service errors
-  // };
+  getById = async (
+    req: Request<UserParamsSchema>,
+    res: Response<UserSchemaType>,
+  ) => {
+    // TODO: Task list for implementation
+    // 1. Validate request params using userParamsSchema
+    const { id } = req.params;
+    const user = await this.usersService.getByID(id);
+    res.json(user);
+    // 2. Call service to get user by ID
+    // 3. Handle validation errors
+    // 4. Handle user not found case
+    // 5. Return user with 200 status
+    // 6. Handle any service errors
+  };
 
   /**
    * Update user by ID
    * @param req Request with UserParamsSchema params and UpdateUserSchema body
    * @param res Response with UserSchema
    */
-  // update = (
-  //   req: Request<UserParamsSchema, UserSchemaType, UpdateUserSchema>,
-  //   res: Response,
-  // ) => {
-  //   // TODO: Task list for implementation
-  //   // 1. Validate request params using userParamsSchema
-  //   // 2. Validate request body using updateUserSchema
-  //   // 3. Call service to update user
-  //   // 4. Handle validation errors
-  //   // 5. Handle user not found case
-  //   // 6. Return updated user with 200 status
-  //   // 7. Handle any service errors
-  // };
+  update = async (
+    req: Request<UserParamsSchema, UserSchemaType, UpdateUserSchema>,
+    res: Response,
+  ) => {
+    // TODO: Task list for implementation
+    const { id } = req.params;
+    const updatedUserData = req.body;
+
+    // 3. Call service to update user
+    const updatedUser = await this.usersService.update(id, updatedUserData);
+    res.json(updatedUser);
+  };
 
   /**
    * Delete user by ID

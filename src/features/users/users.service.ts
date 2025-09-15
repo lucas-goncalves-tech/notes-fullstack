@@ -7,6 +7,8 @@ import { ConnectionManager } from "../../database/pool";
 import { ConflictError } from "../../shared/erros/conflict.error";
 import { UserSchemaType } from "./dtos/user.dto";
 import { InternalServerError } from "../../shared/erros/interval-server.error";
+import { NotFoundError } from "../../shared/erros/not-found.error";
+import { UpdateUserSchema } from "./dtos/update-user.dto";
 
 @injectable()
 export class UsersService {
@@ -51,5 +53,22 @@ export class UsersService {
       throw new InternalServerError();
     }
     return allUsers;
+  }
+
+  async getByID(id: string): Promise<UserSchemaType> {
+    const user = this.usersRepository.getByID(id);
+    if (!user) {
+      throw new NotFoundError("Usuário");
+    }
+    return user;
+  }
+
+  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+    const userExists = this.usersRepository.getByID(id);
+    if (!userExists) {
+      throw new NotFoundError("Usuário");
+    }
+    const updatedUser = await this.usersRepository.update(id, user);
+    return updatedUser;
   }
 }

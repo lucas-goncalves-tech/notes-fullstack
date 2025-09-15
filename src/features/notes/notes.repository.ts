@@ -83,8 +83,8 @@ export class NotesRepository {
     SET ${fields.join(", ")} 
     WHERE "id" = ?;`;
 
-    const stmt = db.prepare(sql);
     try {
+      const stmt = db.prepare(sql);
       stmt.run(...values, id);
 
       // Return the updated note

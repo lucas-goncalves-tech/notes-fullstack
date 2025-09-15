@@ -43,8 +43,8 @@ describe("UserRepository Integration Tests", () => {
     const foundUser = usersRepository.getByID(user.id);
 
     expect(foundUser).toBeDefined();
-    expect(foundUser.name).toBe(userData.name);
-    expect(foundUser.email).toBe(userData.email);
+    expect(foundUser?.name).toBe(userData.name);
+    expect(foundUser?.email).toBe(userData.email);
   });
 
   it("should return on empty array when no users exist", () => {
