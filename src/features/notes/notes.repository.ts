@@ -22,10 +22,10 @@ export class NotesRepository {
     }
   }
 
-  getByID(id: string): NoteSchemaType | undefined {
+  async getByID(id: string): Promise<NoteSchemaType | undefined> {
     const db = this.connectionManager.acquire();
     try {
-      const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes" WHERE "id" = ?;`;
+      const sql = `SELECT * FROM "notes" WHERE "id" = ?;`;
       const stmt = db.prepare(sql);
       return stmt.get(id) as NoteSchemaType | undefined;
     } finally {
@@ -36,7 +36,7 @@ export class NotesRepository {
   async create(note: CreateNoteSchema): Promise<NoteSchemaType> {
     const db = this.connectionManager.acquire();
     const noteID = randomUUID();
-    const sql = `INSERT INTO "notes" ("id", "title", "description", "importance", "user_id") VALUES (?, ?, ?, ?);`;
+    const sql = `INSERT INTO "notes" ("id", "title", "description", "importance", "user_id") VALUES (?, ?, ?, ?, ?);`;
 
     try {
       const stmt = db.prepare(sql);
@@ -47,7 +47,7 @@ export class NotesRepository {
         note.importance,
         note.userID,
       );
-      return noteSchema.parseAsync(this.getByID(noteID));
+      return noteSchema.parseAsync(await this.getByID(noteID));
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;
