@@ -27,7 +27,7 @@ export class UsersService {
       }
 
       db.exec(`BEGIN TRANSACTION`);
-      const createdUser = this.usersRepository.create(user);
+      const createdUser = await this.usersRepository.create(user);
       const noteDate: CreateNoteSchema = {
         userID: createdUser.id,
         title: "Bem vindo",
@@ -47,7 +47,7 @@ export class UsersService {
     }
   }
 
-  async getAll(): Promise<UserSchemaType[]> {
+  getAll(): UserSchemaType[] {
     const allUsers = this.usersRepository.getAll();
     if (!Array.isArray(allUsers)) {
       throw new InternalServerError();
@@ -55,7 +55,7 @@ export class UsersService {
     return allUsers;
   }
 
-  async getByID(id: string): Promise<UserSchemaType> {
+  getByID(id: string): UserSchemaType {
     const user = this.usersRepository.getByID(id);
     if (!user) {
       throw new NotFoundError("Usuário");
@@ -63,12 +63,24 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+  update(id: string, user: UpdateUserSchema): UserSchemaType {
     const userExists = this.usersRepository.getByID(id);
     if (!userExists) {
       throw new NotFoundError("Usuário");
     }
-    const updatedUser = await this.usersRepository.update(id, user);
+    const updatedUser = this.usersRepository.update(id, user);
     return updatedUser;
+  }
+
+  delete(id: string): void {
+    try {
+      const userExists = this.usersRepository.getByID(id);
+      if (!userExists) {
+        throw new NotFoundError("Usuário");
+      }
+      this.usersRepository.delete(id);
+    } catch (error) {
+      throw error;
+    }
   }
 }

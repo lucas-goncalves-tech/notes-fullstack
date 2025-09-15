@@ -3,6 +3,7 @@ import { validate } from "../../shared/middleware/validation.middleware";
 import { createUserSchema } from "./dtos/create-user.dto";
 import { container } from "tsyringe";
 import { UsersController } from "./users.controller";
+import { userParamsSchema } from "./dtos/user-params.dto";
 
 const usersRouter = Router();
 const usersController = container.resolve(UsersController);
@@ -106,7 +107,11 @@ usersRouter.get("/", usersController.getAll);
  *       500:
  *         description: Internal server error
  */
-usersRouter.get("/:id", usersController.getById);
+usersRouter.get(
+  "/:id",
+  validate({ params: userParamsSchema }),
+  usersController.getById,
+);
 
 /**
  * @swagger
@@ -149,7 +154,11 @@ usersRouter.get("/:id", usersController.getById);
  *       500:
  *         description: Internal server error
  */
-usersRouter.put("/:id", usersController.update);
+usersRouter.put(
+  "/:id",
+  validate({ params: userParamsSchema }),
+  usersController.update,
+);
 
 /**
  * @swagger
@@ -182,6 +191,10 @@ usersRouter.put("/:id", usersController.update);
  *       500:
  *         description: Internal server error
  */
-//usersRouter.delete("/:id", usersController.delete);
+usersRouter.delete(
+  "/:id",
+  validate({ params: userParamsSchema }),
+  usersController.delete,
+);
 
 export default usersRouter;

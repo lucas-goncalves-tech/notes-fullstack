@@ -52,7 +52,7 @@ export class UsersRepository {
     }
   }
 
-  create(user: CreateUserSchema): UserSchemaType {
+  async create(user: CreateUserSchema): Promise<UserSchemaType> {
     const db = this.connectionManager.acquire();
     const UUID = randomUUID();
     const sql = `INSERT INTO "users" ("id", "name", "email") VALUES(?,?,?)`;
@@ -69,7 +69,7 @@ export class UsersRepository {
     }
   }
 
-  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+  update(id: string, user: UpdateUserSchema): UserSchemaType {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
