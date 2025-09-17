@@ -33,18 +33,15 @@ const options: swaggerJSDoc.Options = {
         CreateNoteResponse: {
           type: "object",
           properties: {
-            message: {
-              type: "string",
-              example: [
-                {
-                  id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-                  title: "Minha nota",
-                  description: "Descrição da minha nota",
-                  importance: "baixo",
-                  completed: 0,
-                },
-              ],
-            },
+            example: [
+              {
+                id: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                title: "Minha nota",
+                description: "Descrição da minha nota",
+                importance: "baixo",
+                completed: 0,
+              },
+            ],
           },
         },
         UpdateNote: z.toJSONSchema(updateNoteSchema),

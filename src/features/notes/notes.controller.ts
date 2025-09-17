@@ -8,46 +8,47 @@ import { inject, injectable } from "tsyringe";
 export class NotesController {
   constructor(@inject("NotesService") private notesService: NotesService) {}
 
-  getAll = (_req: Request, res: Response): void => {
-    const notes = this.notesService.getAll();
+  getAll = async (_req: Request, res: Response) => {
+    const notes = await this.notesService.getAll();
     res.json(notes);
   };
 
-  getById = (req: Request, res: Response) => {
+  getById = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const note = this.notesService.getById(id);
+    const note = await this.notesService.getById(id);
 
     res.json(note);
   };
 
-  create = (req: Request, res: Response) => {
+  create = async (req: Request, res: Response) => {
     const note = req.body as CreateNoteSchema;
 
-    const createdNote = this.notesService.create(note);
+    const createdNote = await this.notesService.create(note);
 
     res.status(201).json(createdNote);
   };
 
-  update = (req: Request, res: Response) => {
+  update = async (req: Request, res: Response) => {
     const { id } = req.params;
-    const { description, title, completed, importance } =
+    const { description, title, completed, importance, user_id } =
       req.body as UpdateNoteSchema;
 
-    this.notesService.update(id, {
+    await this.notesService.update(id, {
+      user_id,
       title,
       description,
       importance,
       completed,
     });
 
-    const updatedNote = this.notesService.getById(id);
+    const updatedNote = await this.notesService.getById(id);
     res.status(200).json(updatedNote);
   };
 
-  delete = (req: Request, res: Response) => {
+  delete = async (req: Request, res: Response) => {
     const { id } = req.params;
 
-    this.notesService.delete(id);
+    await this.notesService.delete(id);
 
     res.status(204).send();
   };

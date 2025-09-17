@@ -21,7 +21,7 @@ export class UsersService {
   async createWithWelcomeNote(user: CreateUserSchema): Promise<UserSchemaType> {
     const db = this.connectionManager.acquire();
     try {
-      const userExists = this.usersRepository.getByEmail(user.email);
+      const userExists = await this.usersRepository.getByEmail(user.email);
       if (userExists) {
         throw new ConflictError("Usuário já existe");
       }
@@ -29,7 +29,7 @@ export class UsersService {
       db.exec(`BEGIN TRANSACTION`);
       const createdUser = await this.usersRepository.create(user);
       const noteDate: CreateNoteSchema = {
-        userID: createdUser.id,
+        user_id: createdUser.id,
         title: "Bem vindo",
         description: "Seja bem-vindo ao NoteSphere",
         importance: "baixo",
@@ -40,6 +40,7 @@ export class UsersService {
       db.exec(`COMMIT`);
       return createdUser;
     } catch (error) {
+      if (error instanceof ConflictError) throw error;
       db.exec(`ROLLBACK`);
       throw error;
     } finally {
@@ -55,16 +56,16 @@ export class UsersService {
     return allUsers;
   }
 
-  getByID(id: string): UserSchemaType {
-    const user = this.usersRepository.getByID(id);
+  async getByID(id: string): Promise<UserSchemaType> {
+    const user = await this.usersRepository.getByID(id);
     if (!user) {
       throw new NotFoundError("Usuário");
     }
     return user;
   }
 
-  update(id: string, user: UpdateUserSchema): UserSchemaType {
-    const userExists = this.usersRepository.getByID(id);
+  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+    const userExists = await this.usersRepository.getByID(id);
     if (!userExists) {
       throw new NotFoundError("Usuário");
     }
@@ -72,9 +73,9 @@ export class UsersService {
     return updatedUser;
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     try {
-      const userExists = this.usersRepository.getByID(id);
+      const userExists = await this.usersRepository.getByID(id);
       if (!userExists) {
         throw new NotFoundError("Usuário");
       }

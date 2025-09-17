@@ -24,7 +24,7 @@ export class UsersRepository {
     }
   }
 
-  getByID(id: string): UserSchemaType | undefined {
+  async getByID(id: string): Promise<UserSchemaType | undefined> {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "id" = ?`;
     try {
@@ -38,7 +38,7 @@ export class UsersRepository {
     }
   }
 
-  getByEmail(email: string): UserSchemaType | undefined {
+  async getByEmail(email: string): Promise<UserSchemaType | undefined> {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "email" = ?`;
     try {
@@ -60,7 +60,7 @@ export class UsersRepository {
       const stmt = db.prepare(sql);
       stmt.run(UUID, user.name, user.email);
 
-      return userSchema.parse(this.getByID(UUID));
+      return userSchema.parseAsync(await this.getByID(UUID));
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -69,7 +69,7 @@ export class UsersRepository {
     }
   }
 
-  update(id: string, user: UpdateUserSchema): UserSchemaType {
+  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
@@ -99,7 +99,7 @@ export class UsersRepository {
       stmt.run(...values, id);
 
       // Return the updated note
-      return this.getByID(id)!;
+      return (await this.getByID(id))!;
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;

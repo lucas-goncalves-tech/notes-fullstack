@@ -11,7 +11,7 @@ export class NotesRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  getAll(): NoteSchemaType[] {
+  async getAll(): Promise<NoteSchemaType[]> {
     const db = this.connectionManager.acquire();
     try {
       const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
@@ -45,18 +45,22 @@ export class NotesRepository {
         note.title,
         note.description,
         note.importance,
-        note.userID,
+        note.user_id,
       );
       return noteSchema.parseAsync(await this.getByID(noteID));
     } catch (err) {
-      if (err instanceof Error) console.error("SQL error: ", err.message);
+      if (err instanceof Error)
+        console.error("SQL notes create error: ", err.message);
       throw err;
     } finally {
       this.connectionManager.release(db);
     }
   }
 
-  update(id: string, note: UpdateNoteSchema): NoteSchemaType {
+  async update(
+    id: string,
+    note: UpdateNoteSchema,
+  ): Promise<NoteSchemaType | undefined> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
@@ -70,34 +74,39 @@ export class NotesRepository {
 
     for (const key in note) {
       const value = note[key as keyof UpdateNoteSchema];
+      if (key === "user_id") continue;
       if (value !== undefined) {
-        fields.push(`${fieldMap[key as keyof typeof fieldMap]} = ?`);
+        fields.push(`"${fieldMap[key as keyof typeof fieldMap]}" = ?`);
         values.push(value);
       }
     }
 
     // Always update the updated_at timestamp
-    fields.push("updated_at = CURRENT_TIMESTAMP");
+    fields.push(`"updated_at" = CURRENT_TIMESTAMP`);
 
     const sql = `UPDATE "notes" 
     SET ${fields.join(", ")} 
-    WHERE "id" = ?;`;
+    WHERE "id" = ? AND user_id = ?;`;
 
     try {
       const stmt = db.prepare(sql);
-      stmt.run(...values, id);
+      const result = stmt.run(...values, id, note.user_id);
 
+      if (result.changes === 0) {
+        return undefined;
+      }
       // Return the updated note
-      return noteSchema.parse(this.getByID(id));
+      return noteSchema.parseAsync(await this.getByID(id));
     } catch (err) {
-      if (err instanceof Error) console.error("SQL error: ", err.message);
+      if (err instanceof Error)
+        console.error("SQL notes update error: ", err.message);
       throw err;
     } finally {
       this.connectionManager.release(db);
     }
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     const db = this.connectionManager.acquire();
     const sql = `DELETE FROM "notes" WHERE "id" = ?;`;
     const stmt = db.prepare(sql);
@@ -105,7 +114,8 @@ export class NotesRepository {
     try {
       stmt.run(id);
     } catch (err) {
-      if (err instanceof Error) console.error("SQL error: ", err.message);
+      if (err instanceof Error)
+        console.error("SQL notes delete error: ", err.message);
       throw err;
     } finally {
       this.connectionManager.release(db);

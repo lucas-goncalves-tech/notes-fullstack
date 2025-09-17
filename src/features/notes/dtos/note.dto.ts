@@ -2,6 +2,7 @@ import z from "zod";
 
 export const noteSchema = z.object({
   id: z.uuid(),
+  user_id: z.string(),
   title: z.string(),
   description: z.string(),
   importance: z.enum(["baixo", "medio", "alto"]),

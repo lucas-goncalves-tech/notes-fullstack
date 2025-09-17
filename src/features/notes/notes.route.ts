@@ -88,7 +88,7 @@ notesRouter.get("/:id", notesController.getById);
  *      content:
  *        application/json:
  *          schema:
- *            $ref: '#/components/schemas/CreateNoteResponse'
+ *            $ref: '#/components/schemas/CreateNote'
  *    responses:
  *      201:
  *        description: Nota criada com sucesso
@@ -130,17 +130,12 @@ notesRouter.post(
  *        required: true
  *        schema:
  *          type: string
- *        description: ID da nota a ser atualizada
+ *        description: ID da nota a ser atualizada.
  *    requestBody:
  *      content:
  *        application/json:
  *          schema:
  *            $ref: '#/components/schemas/UpdateNote'
- *          example:
- *            title: "Novo titulo da minha nota"
- *            description: "Nova descrição da nota"
- *            importance: "medio"
- *            completed: 1
  *    responses:
  *      200:
  *        description: Nota atualizada com sucesso!

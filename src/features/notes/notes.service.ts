@@ -11,38 +11,41 @@ export class NotesService {
     @inject("NotesRepository") private notesRepository: NotesRepository,
   ) {}
 
-  getAll(): NoteSchemaType[] {
-    const notes = this.notesRepository.getAll();
+  async getAll(): Promise<NoteSchemaType[]> {
+    const notes = await this.notesRepository.getAll();
     return notes;
   }
 
-  getById(id: string) {
-    const note = this.notesRepository.getByID(id);
+  async getById(id: string) {
+    const note = await this.notesRepository.getByID(id);
     if (!note) {
       throw new NotFoundError("Nota");
     }
     return note;
   }
 
-  create(note: CreateNoteSchema) {
-    return this.notesRepository.create(note);
+  async create(note: CreateNoteSchema) {
+    return await this.notesRepository.create(note);
   }
 
-  update(id: string, note: UpdateNoteSchema): NoteSchemaType {
-    const noteExists = this.notesRepository.getByID(id);
+  async update(id: string, note: UpdateNoteSchema): Promise<NoteSchemaType> {
+    const noteExists = await this.notesRepository.getByID(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }
-    const updatedNote = this.notesRepository.update(id, note);
+    const updatedNote = await this.notesRepository.update(id, note);
+    if (!updatedNote) {
+      throw new NotFoundError("Usuário");
+    }
 
     return updatedNote;
   }
 
-  delete(id: string): void {
-    const noteExists = this.notesRepository.getByID(id);
+  async delete(id: string): Promise<void> {
+    const noteExists = await this.notesRepository.getByID(id);
     if (!noteExists) {
       throw new NotFoundError("Nota");
     }
-    return this.notesRepository.delete(id);
+    this.notesRepository.delete(id);
   }
 }

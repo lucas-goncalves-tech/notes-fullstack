@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { CreateUserSchema } from "./dtos/create-user.dto";
-//import { UpdateUserSchema } from "./dtos/update-user.dto";
-//import { UserParamsSchema } from "./dtos/user-params.dto";
 import { UserSchemaType } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { UsersService } from "./users.service";
@@ -30,11 +28,14 @@ export class UsersController {
     res.json(AllUsers);
   };
 
-  getById = (req: Request<UserParamsSchema>, res: Response<UserSchemaType>) => {
+  getById = async (
+    req: Request<UserParamsSchema>,
+    res: Response<UserSchemaType>,
+  ) => {
     // TODO: Task list for implementation
     // 1. Validate request params using userParamsSchema
     const { id } = req.params;
-    const user = this.usersService.getByID(id);
+    const user = await this.usersService.getByID(id);
     res.json(user);
   };
 

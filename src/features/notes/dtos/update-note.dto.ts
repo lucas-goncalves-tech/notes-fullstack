@@ -2,6 +2,7 @@ import z from "zod";
 
 export const updateNoteSchema = z
   .object({
+    user_id: z.string(),
     title: z
       .string()
       .min(3, "O título deve ter no mínimo 3 caracteres.")
