@@ -14,7 +14,7 @@ export class NotesRepository {
   async getAll(): Promise<NoteSchemaType[]> {
     const db = this.connectionManager.acquire();
     try {
-      const sql = `SELECT "id", "title", "description", "importance", "completed" FROM "notes";`;
+      const sql = `SELECT * FROM "notes";`;
       const stmt = db.prepare(sql);
       return stmt.all() as NoteSchemaType[];
     } finally {
@@ -84,8 +84,8 @@ export class NotesRepository {
     // Always update the updated_at timestamp
     fields.push(`"updated_at" = CURRENT_TIMESTAMP`);
 
-    const sql = `UPDATE "notes" 
-    SET ${fields.join(", ")} 
+    const sql = `UPDATE "notes"
+    SET ${fields.join(", ")}
     WHERE "id" = ? AND user_id = ?;`;
 
     try {

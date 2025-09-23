@@ -3,10 +3,11 @@ import z from "zod";
 import { noteSchema } from "../../features/notes/dtos/note.dto";
 import { createNoteSchema } from "../../features/notes/dtos/create-note.dto";
 import { updateNoteSchema } from "../../features/notes/dtos/update-note.dto";
-import { userSchema } from "../../features/users/dtos/user.dto";
+import { userResponseSchema } from "../../features/users/dtos/user.dto";
 import { createUserSchema } from "../../features/users/dtos/create-user.dto";
 import { updateUserSchema } from "../../features/users/dtos/update-user.dto";
 import { userParamsSchema } from "../../features/users/dtos/user-params.dto";
+import { registerUserSchema } from "../../features/auth/dtos/register-user.dto";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -24,6 +25,10 @@ const options: swaggerJSDoc.Options = {
       {
         name: "Users",
         description: "Operações relacionadas a usuários",
+      },
+      {
+        name: "Auth",
+        description: "Operações relacioandas a cadastro de usuários",
       },
     ],
     components: {
@@ -60,7 +65,7 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
-        User: z.toJSONSchema(userSchema),
+        User: z.toJSONSchema(userResponseSchema),
         CreateUser: z.toJSONSchema(createUserSchema),
         CreateResponseUser: {
           type: "object",
@@ -79,6 +84,7 @@ const options: swaggerJSDoc.Options = {
         },
         UpdateUser: z.toJSONSchema(updateUserSchema),
         UserParams: z.toJSONSchema(userParamsSchema),
+        RegisterUserDto: z.toJSONSchema(registerUserSchema),
         UpdateResponseUser: {
           type: "object",
           properties: {
@@ -146,6 +152,7 @@ const options: swaggerJSDoc.Options = {
   apis: [
     "./src/features/notes/notes.route.ts",
     "./src/features/users/users.routes.ts",
+    "./src/features/auth/auth.routes.ts",
   ],
 };
 

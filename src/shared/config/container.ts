@@ -5,6 +5,7 @@ import { NotesRepository } from "../../features/notes/notes.repository";
 import { NotesService } from "../../features/notes/notes.service";
 import { UsersRepository } from "../../features/users/users.repository";
 import { UsersService } from "../../features/users/users.service";
+import { AuthService } from "../../features/auth/auth.service";
 
 // --- REGISTO DE INSTÂNCIAS (SINGLETONS) ---
 const connectionManager = new ConnectionManager(db);
@@ -31,4 +32,10 @@ container.register("UsersRepository", {
 
 container.register("UsersService", {
   useClass: UsersService,
+});
+
+// - Auth -
+
+container.register("AuthService", {
+  useClass: AuthService,
 });

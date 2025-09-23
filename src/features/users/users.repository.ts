@@ -1,6 +1,11 @@
-import { CreateUserSchema } from "./dtos/create-user.dto";
+import { CreateUserDTO } from "./dtos/create-user.dto";
 import { randomUUID } from "crypto";
-import { userSchema, UserSchemaType } from "./dtos/user.dto";
+import {
+  UserDTO,
+  usersSchema,
+  UserResponseDTO,
+  userResponseSchema,
+} from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
 import { UpdateUserSchema } from "./dtos/update-user.dto";
@@ -11,11 +16,12 @@ export class UsersRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  getAll(): UserSchemaType[] {
+  async getAll(): Promise<UserDTO[]> {
     const db = this.connectionManager.acquire();
     try {
       const stmt = db.prepare(`SELECT * FROM "users"`);
-      return stmt.all() as UserSchemaType[];
+      const users = await usersSchema.parseAsync(stmt.all());
+      return users;
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -24,12 +30,12 @@ export class UsersRepository {
     }
   }
 
-  async getByID(id: string): Promise<UserSchemaType | undefined> {
+  async getByID(id: string): Promise<UserDTO | undefined> {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "id" = ?`;
     try {
       const stmt = db.prepare(sql);
-      return stmt.get(id) as UserSchemaType | undefined;
+      return stmt.get(id) as UserDTO | undefined;
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -38,12 +44,12 @@ export class UsersRepository {
     }
   }
 
-  async getByEmail(email: string): Promise<UserSchemaType | undefined> {
+  async getByEmail(email: string): Promise<UserDTO | undefined> {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "email" = ?`;
     try {
       const stmt = db.prepare(sql);
-      return stmt.get(email) as UserSchemaType | undefined;
+      return stmt.get(email) as UserDTO | undefined;
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -52,15 +58,15 @@ export class UsersRepository {
     }
   }
 
-  async create(user: CreateUserSchema): Promise<UserSchemaType> {
+  async create(user: CreateUserDTO): Promise<UserResponseDTO> {
     const db = this.connectionManager.acquire();
     const UUID = randomUUID();
-    const sql = `INSERT INTO "users" ("id", "name", "email") VALUES(?,?,?)`;
+    const sql = `INSERT INTO "users" ("id", "name", "email", "password_hash") VALUES(?,?,?,?)`;
     try {
       const stmt = db.prepare(sql);
-      stmt.run(UUID, user.name, user.email);
+      stmt.run(UUID, user.name, user.email, user.password_hash);
 
-      return userSchema.parseAsync(await this.getByID(UUID));
+      return userResponseSchema.parseAsync(await this.getByID(UUID));
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -69,12 +75,12 @@ export class UsersRepository {
     }
   }
 
-  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+  async update(id: string, user: UpdateUserSchema): Promise<UserDTO> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
 
-    const fieldMap: Partial<UserSchemaType> = {
+    const fieldMap: Partial<UserDTO> = {
       name: "name",
       email: "email",
     };
@@ -90,8 +96,8 @@ export class UsersRepository {
     // Always update the updated_at timestamp
     fields.push("updated_at = CURRENT_TIMESTAMP");
 
-    const sql = `UPDATE "users" 
-      SET ${fields.join(", ")} 
+    const sql = `UPDATE "users"
+      SET ${fields.join(", ")}
       WHERE "id" = ?;`;
 
     try {
@@ -108,7 +114,7 @@ export class UsersRepository {
     }
   }
 
-  delete(id: string): void {
+  async delete(id: string): Promise<void> {
     const db = this.connectionManager.acquire();
     const sql = `DELETE FROM "users" WHERE "id" = ?`;
     try {

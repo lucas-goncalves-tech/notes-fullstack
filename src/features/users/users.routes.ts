@@ -1,6 +1,5 @@
 import { Router } from "express";
 import { validate } from "../../shared/middleware/validation.middleware";
-import { createUserSchema } from "./dtos/create-user.dto";
 import { container } from "tsyringe";
 import { UsersController } from "./users.controller";
 import { userParamsSchema } from "./dtos/user-params.dto";
@@ -8,49 +7,49 @@ import { userParamsSchema } from "./dtos/user-params.dto";
 const usersRouter = Router();
 const usersController = container.resolve(UsersController);
 
-/**
- * @swagger
- * /api/users/:
- *   post:
- *     summary: Create a new user
- *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/CreateUser'
- *     responses:
- *       201:
- *         description: User created successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/User'
- *       400:
- *         description: Validation error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BadRequest'
- *       409:
- *         description: Conflict error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ConflictError'
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/InternalServerError'
- */
-usersRouter.post(
-  "/",
-  validate({ body: createUserSchema }),
-  usersController.create,
-);
+// /**
+//  * @swagger
+//  * /api/users/:
+//  *   post:
+//  *     summary: Create a new user
+//  *     tags: [Users]
+//  *     requestBody:
+//  *       required: true
+//  *       content:
+//  *         application/json:
+//  *           schema:
+//  *             $ref: '#/components/schemas/CreateUser'
+//  *     responses:
+//  *       201:
+//  *         description: User created successfully
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/User'
+//  *       400:
+//  *         description: Validation error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/BadRequest'
+//  *       409:
+//  *         description: Conflict error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/ConflictError'
+//  *       500:
+//  *         description: Internal server error
+//  *         content:
+//  *           application/json:
+//  *             schema:
+//  *               $ref: '#/components/schemas/InternalServerError'
+//  */
+// usersRouter.post(
+//   "/",
+//   validate({ body: createUserSchema }),
+//   usersController.create,
+// );
 
 /**
  * @swagger

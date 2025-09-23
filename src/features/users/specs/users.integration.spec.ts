@@ -32,28 +32,28 @@ describe("UserRepository Integration Tests", () => {
     db.prepare(`DELETE FROM "users"`).run();
   });
 
-  it("should create a new user and find it by id", () => {
+  it("should create a new user and find it by id", async () => {
     const userData = {
       name: "John Doe",
       email: "xesquedele@test.com",
     };
 
-    const user = usersRepository.create(userData);
+    const user = await usersRepository.create(userData);
 
-    const foundUser = usersRepository.getByID(user.id);
+    const foundUser = await usersRepository.getByID(user.id);
 
     expect(foundUser).toBeDefined();
     expect(foundUser?.name).toBe(userData.name);
     expect(foundUser?.email).toBe(userData.email);
   });
 
-  it("should return on empty array when no users exist", () => {
-    const users = usersRepository.getAll();
+  it("should return on empty array when no users exist", async () => {
+    const users = await usersRepository.getAll();
 
     expect(users).toEqual([]);
   });
 
-  it("should return all users when users exist", () => {
+  it("should return all users when users exist", async () => {
     const userData1 = {
       name: "John Doe",
       email: "john@test.com",
@@ -64,10 +64,10 @@ describe("UserRepository Integration Tests", () => {
       email: "jane@test.com",
     };
 
-    usersRepository.create(userData1);
-    usersRepository.create(userData2);
+    await usersRepository.create(userData1);
+    await usersRepository.create(userData2);
 
-    const users = usersRepository.getAll();
+    const users = await usersRepository.getAll();
 
     expect(users).toHaveLength(2);
     expect(users).toEqual(
@@ -78,20 +78,23 @@ describe("UserRepository Integration Tests", () => {
     );
   });
 
-  it("should update a user", () => {
+  it("should update a user", async () => {
     const userData = {
       name: "John Doe",
       email: "john@test.com",
     };
 
-    const createdUser = usersRepository.create(userData);
+    const createdUser = await usersRepository.create(userData);
 
     const updateData = {
       name: "John Updated",
       email: "john.updated@test.com",
     };
 
-    const updatedUser = usersRepository.update(createdUser.id, updateData);
+    const updatedUser = await usersRepository.update(
+      createdUser.id,
+      updateData,
+    );
 
     expect(updatedUser).toBeDefined();
     expect(updatedUser.name).toBe(updateData.name);
@@ -103,23 +106,23 @@ describe("UserRepository Integration Tests", () => {
     );
   });
 
-  it("should delete a user", () => {
+  it("should delete a user", async () => {
     const userData = {
       name: "John Doe",
       email: "john@test.com",
     };
 
-    const createdUser = usersRepository.create(userData);
+    const createdUser = await usersRepository.create(userData);
 
     // Verify user exists
-    let foundUser = usersRepository.getByID(createdUser.id);
+    let foundUser = await usersRepository.getByID(createdUser.id);
     expect(foundUser).toBeDefined();
 
     // Delete user
-    usersRepository.delete(createdUser.id);
+    await usersRepository.delete(createdUser.id);
 
     // Verify user is deleted
-    foundUser = usersRepository.getByID(createdUser.id);
+    foundUser = await usersRepository.getByID(createdUser.id);
     expect(foundUser).toBeUndefined();
   });
 
@@ -131,15 +134,15 @@ describe("UserRepository Integration Tests", () => {
 
     // This should not throw an error, but return undefined or handle gracefully
     // Since the implementation doesn't check if user exists, we'll just verify it doesn't throw
-    expect(() => {
-      usersRepository.update("non-existent-id", updateData);
+    expect(async () => {
+      await usersRepository.update("non-existent-id", updateData);
     }).not.toThrow();
   });
 
   it("should handle deleting a non-existent user", () => {
     // This should not throw an error
-    expect(() => {
-      usersRepository.delete("non-existent-id");
+    expect(async () => {
+      await usersRepository.delete("non-existent-id");
     }).not.toThrow();
   });
 });

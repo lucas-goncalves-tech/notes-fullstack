@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { CreateUserSchema } from "./dtos/create-user.dto";
-import { UserSchemaType } from "./dtos/user.dto";
+import { CreateUserDTO } from "./dtos/create-user.dto";
+import { UserDTO } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { UsersService } from "./users.service";
 import { UserParamsSchema } from "./dtos/user-params.dto";
@@ -11,7 +11,7 @@ export class UsersController {
   constructor(@inject("UsersService") private usersService: UsersService) {}
 
   create = async (
-    req: Request<object, UserSchemaType, CreateUserSchema>,
+    req: Request<object, UserDTO, CreateUserDTO>,
     res: Response,
   ) => {
     // TODO: Task list for implementation
@@ -21,17 +21,14 @@ export class UsersController {
     res.status(201).json(createduser);
   };
 
-  getAll = (req: Request, res: Response) => {
+  getAll = async (req: Request, res: Response) => {
     // TODO: Task list for implementation
     // 1. Call service to get all users
-    const AllUsers = this.usersService.getAll();
+    const AllUsers = await this.usersService.getAll();
     res.json(AllUsers);
   };
 
-  getById = async (
-    req: Request<UserParamsSchema>,
-    res: Response<UserSchemaType>,
-  ) => {
+  getById = async (req: Request<UserParamsSchema>, res: Response<UserDTO>) => {
     // TODO: Task list for implementation
     // 1. Validate request params using userParamsSchema
     const { id } = req.params;
@@ -39,8 +36,8 @@ export class UsersController {
     res.json(user);
   };
 
-  update = (
-    req: Request<UserParamsSchema, UserSchemaType, UpdateUserSchema>,
+  update = async (
+    req: Request<UserParamsSchema, UserDTO, UpdateUserSchema>,
     res: Response,
   ) => {
     // TODO: Task list for implementation
@@ -48,17 +45,17 @@ export class UsersController {
     const updatedUserData = req.body;
 
     // 3. Call service to update user
-    const updatedUser = this.usersService.update(id, updatedUserData);
+    const updatedUser = await this.usersService.update(id, updatedUserData);
     res.json(updatedUser);
   };
 
-  delete = (req: Request<UserParamsSchema>, res: Response) => {
+  delete = async (req: Request<UserParamsSchema>, res: Response) => {
     try {
       // TODO: Task list for implementation
       const { id } = req.params;
 
       // 2. Call service to delete user
-      this.usersService.delete(id);
+      await this.usersService.delete(id);
       res.status(204).send();
     } catch (error) {
       throw error;

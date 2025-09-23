@@ -1,11 +1,11 @@
 import { UsersRepository } from "./users.repository";
-import { CreateUserSchema } from "./dtos/create-user.dto";
+import { CreateUserDTO } from "./dtos/create-user.dto";
 import { NotesRepository } from "../notes/notes.repository";
 import { CreateNoteSchema } from "../notes/dtos/create-note.dto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
 import { ConflictError } from "../../shared/erros/conflict.error";
-import { UserSchemaType } from "./dtos/user.dto";
+import { UserDTO } from "./dtos/user.dto";
 import { InternalServerError } from "../../shared/erros/interval-server.error";
 import { NotFoundError } from "../../shared/erros/not-found.error";
 import { UpdateUserSchema } from "./dtos/update-user.dto";
@@ -18,7 +18,7 @@ export class UsersService {
     @inject("NotesRepository") private notesRepository: NotesRepository,
   ) {}
 
-  async createWithWelcomeNote(user: CreateUserSchema): Promise<UserSchemaType> {
+  async createWithWelcomeNote(user: CreateUserDTO): Promise<UserDTO> {
     const db = this.connectionManager.acquire();
     try {
       const userExists = await this.usersRepository.getByEmail(user.email);
@@ -48,15 +48,15 @@ export class UsersService {
     }
   }
 
-  getAll(): UserSchemaType[] {
-    const allUsers = this.usersRepository.getAll();
+  async getAll(): Promise<UserDTO[]> {
+    const allUsers = await this.usersRepository.getAll();
     if (!Array.isArray(allUsers)) {
       throw new InternalServerError();
     }
     return allUsers;
   }
 
-  async getByID(id: string): Promise<UserSchemaType> {
+  async getByID(id: string): Promise<UserDTO> {
     const user = await this.usersRepository.getByID(id);
     if (!user) {
       throw new NotFoundError("Usuário");
@@ -64,7 +64,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, user: UpdateUserSchema): Promise<UserSchemaType> {
+  async update(id: string, user: UpdateUserSchema): Promise<UserDTO> {
     const userExists = await this.usersRepository.getByID(id);
     if (!userExists) {
       throw new NotFoundError("Usuário");
@@ -79,7 +79,7 @@ export class UsersService {
       if (!userExists) {
         throw new NotFoundError("Usuário");
       }
-      this.usersRepository.delete(id);
+      await this.usersRepository.delete(id);
     } catch (error) {
       throw error;
     }
