@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { CreateUserDTO } from "./dtos/create-user.dto";
 import { UserDTO } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { UsersService } from "./users.service";
@@ -9,17 +8,6 @@ import { UpdateUserSchema } from "./dtos/update-user.dto";
 @injectable()
 export class UsersController {
   constructor(@inject("UsersService") private usersService: UsersService) {}
-
-  create = async (
-    req: Request<object, UserDTO, CreateUserDTO>,
-    res: Response,
-  ) => {
-    // TODO: Task list for implementation
-    const user = req.body;
-    // 2. Call service to create user with welcome note
-    const createduser = await this.usersService.createWithWelcomeNote(user);
-    res.status(201).json(createduser);
-  };
 
   getAll = async (req: Request, res: Response) => {
     // TODO: Task list for implementation

@@ -3,11 +3,11 @@ import z from "zod";
 import { noteSchema } from "../../features/notes/dtos/note.dto";
 import { createNoteSchema } from "../../features/notes/dtos/create-note.dto";
 import { updateNoteSchema } from "../../features/notes/dtos/update-note.dto";
-import { userResponseSchema } from "../../features/users/dtos/user.dto";
 import { createUserSchema } from "../../features/users/dtos/create-user.dto";
 import { updateUserSchema } from "../../features/users/dtos/update-user.dto";
 import { userParamsSchema } from "../../features/users/dtos/user-params.dto";
 import { registerUserSchema } from "../../features/auth/dtos/register-user.dto";
+import { userPayloadSchema } from "../../features/users/dtos/user.dto";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -65,7 +65,7 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
-        User: z.toJSONSchema(userResponseSchema),
+        User: z.toJSONSchema(userPayloadSchema),
         CreateUser: z.toJSONSchema(createUserSchema),
         CreateResponseUser: {
           type: "object",

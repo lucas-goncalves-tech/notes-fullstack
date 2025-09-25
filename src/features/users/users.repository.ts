@@ -2,9 +2,9 @@ import { CreateUserDTO } from "./dtos/create-user.dto";
 import { randomUUID } from "crypto";
 import {
   UserDTO,
+  UserPayloadDTO,
+  userPayloadSchema,
   usersSchema,
-  UserResponseDTO,
-  userResponseSchema,
 } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
@@ -58,7 +58,7 @@ export class UsersRepository {
     }
   }
 
-  async create(user: CreateUserDTO): Promise<UserResponseDTO> {
+  async create(user: CreateUserDTO): Promise<UserPayloadDTO> {
     const db = this.connectionManager.acquire();
     const UUID = randomUUID();
     const sql = `INSERT INTO "users" ("id", "name", "email", "password_hash") VALUES(?,?,?,?)`;
@@ -66,7 +66,7 @@ export class UsersRepository {
       const stmt = db.prepare(sql);
       stmt.run(UUID, user.name, user.email, user.password_hash);
 
-      return userResponseSchema.parseAsync(await this.getByID(UUID));
+      return userPayloadSchema.parseAsync(await this.getByID(UUID));
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;

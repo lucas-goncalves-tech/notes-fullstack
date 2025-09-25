@@ -1,7 +1,7 @@
 import { BaseError } from "./base.error";
 
 export class UnauthorizedError extends BaseError {
-  constructor() {
-    super(401, "Acesso não autorizado");
+  constructor(message = "Acesso não autorizado") {
+    super(401, message);
   }
 }

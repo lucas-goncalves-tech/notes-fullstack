@@ -11,7 +11,11 @@ export const userSchema = z.object({
 });
 
 export const usersSchema = z.array(userSchema);
-export const userResponseSchema = userSchema.omit({ password_hash: true });
+export const userPayloadSchema = userSchema.omit({
+  password_hash: true,
+  created_at: true,
+  updated_at: true,
+});
 
 export type UserDTO = z.infer<typeof userSchema>;
-export type UserResponseDTO = z.infer<typeof userResponseSchema>;
+export type UserPayloadDTO = z.infer<typeof userPayloadSchema>;
