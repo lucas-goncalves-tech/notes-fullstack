@@ -2,8 +2,8 @@ import { CreateUserDTO } from "./dtos/create-user.dto";
 import { randomUUID } from "crypto";
 import {
   UserDTO,
-  UserPayloadDTO,
-  userPayloadSchema,
+  UserMinimalSchema,
+  userMinimalSchema,
   usersSchema,
 } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
@@ -58,7 +58,7 @@ export class UsersRepository {
     }
   }
 
-  async create(user: CreateUserDTO): Promise<UserPayloadDTO> {
+  async create(user: CreateUserDTO): Promise<UserMinimalSchema> {
     const db = this.connectionManager.acquire();
     const UUID = randomUUID();
     const sql = `INSERT INTO "users" ("id", "name", "email", "password_hash") VALUES(?,?,?,?)`;
@@ -66,7 +66,7 @@ export class UsersRepository {
       const stmt = db.prepare(sql);
       stmt.run(UUID, user.name, user.email, user.password_hash);
 
-      return userPayloadSchema.parseAsync(await this.getByID(UUID));
+      return userMinimalSchema.parseAsync(await this.getByID(UUID));
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;

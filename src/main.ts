@@ -1,8 +1,10 @@
 import app from "./app";
+import redisClient from "./shared/redis/client";
 import { Server } from "http";
 
 const PORT = process.env.PORT || 3333;
 
+redisClient.connect();
 const server: Server = app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

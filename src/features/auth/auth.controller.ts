@@ -18,10 +18,27 @@ export class AuthController {
   login = async (req: Request, res: Response) => {
     const credentials = req.body as LoginUserDTO;
 
-    const jwt_token = await this.authService.login(credentials);
+    const tokens = await this.authService.login(credentials);
+
+    res
+      .cookie("refreshToken", tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      })
+      .json({
+        token: tokens.accessToken,
+      });
+  };
+
+  refresh = async (req: Request, res: Response) => {
+    const refreshToken = req.cookies?.refreshToken;
+
+    const accessToken = await this.authService.refreshToken(refreshToken);
 
     res.json({
-      token: jwt_token,
+      token: accessToken,
     });
   };
 
@@ -29,5 +46,12 @@ export class AuthController {
     const userPayload = req.user;
 
     res.json(userPayload);
+  };
+
+  logout = async (req: Request, res: Response) => {
+    const token = req.headers.authorization?.split(" ")[1];
+    await this.authService.logout(token);
+
+    res.clearCookie("refreshToken").status(204).end();
   };
 }

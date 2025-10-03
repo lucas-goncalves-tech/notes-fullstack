@@ -7,7 +7,8 @@ import { createUserSchema } from "../../features/users/dtos/create-user.dto";
 import { updateUserSchema } from "../../features/users/dtos/update-user.dto";
 import { userParamsSchema } from "../../features/users/dtos/user-params.dto";
 import { registerUserSchema } from "../../features/auth/dtos/register-user.dto";
-import { userPayloadSchema } from "../../features/users/dtos/user.dto";
+import { userMinimalSchema } from "../../features/users/dtos/user.dto";
+import { loginUserSchema } from "../../features/auth/dtos/login-user.dto";
 
 const options: swaggerJSDoc.Options = {
   definition: {
@@ -32,6 +33,13 @@ const options: swaggerJSDoc.Options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
       schemas: {
         Note: z.toJSONSchema(noteSchema),
         CreateNote: z.toJSONSchema(createNoteSchema),
@@ -65,7 +73,7 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
-        User: z.toJSONSchema(userPayloadSchema),
+        User: z.toJSONSchema(userMinimalSchema),
         CreateUser: z.toJSONSchema(createUserSchema),
         CreateResponseUser: {
           type: "object",
@@ -85,6 +93,27 @@ const options: swaggerJSDoc.Options = {
         UpdateUser: z.toJSONSchema(updateUserSchema),
         UserParams: z.toJSONSchema(userParamsSchema),
         RegisterUserDto: z.toJSONSchema(registerUserSchema),
+        LoginUserDto: z.toJSONSchema(loginUserSchema),
+        LoginResponse: {
+          type: "object",
+          properties: {
+            token: {
+              type: "string",
+              example:
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZmE4NWY2NC01NzE3LTQ1NjItYjNmYy0yYzk2M2Y2NmFmYTYiLCJpYXQiOjE2ODgwODc0MDAsImV4cCI6MTY4ODA5MTAwMH0.dQw4w9WgXcQ",
+            },
+          },
+        },
+        Token: {
+          type: "object",
+          properties: {
+            token: {
+              type: "string",
+              example:
+                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZmFhYTBlLTYyYzQtNDJlMy1hMTk2LTk0MmM5NDQ2NWU5NSIsIm5hbWUiOiJzdHJpbmciLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1OTUxNzE2NiwiZXhwIjoxNzU5NTE4MDY2fQ.nceyxQsnhDEtFEKt0JGPZARHxL-WUiIiZgy90KPEq64",
+            },
+          },
+        },
         UpdateResponseUser: {
           type: "object",
           properties: {
@@ -143,6 +172,15 @@ const options: swaggerJSDoc.Options = {
             message: {
               type: "string",
               example: "Erro interno do servidor",
+            },
+          },
+        },
+        UnauthorizedError: {
+          type: "object",
+          properties: {
+            message: {
+              type: "string",
+              example: "Token inválido ou expirado!",
             },
           },
         },

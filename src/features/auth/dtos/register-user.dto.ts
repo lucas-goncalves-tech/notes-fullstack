@@ -7,7 +7,9 @@ export const registerUserSchema = z
     password: z
       .string("Password is required")
       .min(8, "Password must be at least 8 characters long"),
-    repassword: z.string("Please confirm your password"),
+    repassword: z
+      .string("Please confirm your password")
+      .min(8, "Password must be at least 8 characters long"),
   })
   .refine((data) => data.password === data.repassword, {
     message: "Passwords do not match",
