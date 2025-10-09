@@ -10,12 +10,14 @@ export const userSchema = z.object({
   updated_at: z.string(),
 });
 
-export const usersSchema = z.array(userSchema);
 export const userMinimalSchema = userSchema.omit({
   password_hash: true,
-  created_at: true,
-  updated_at: true,
 });
+export const usersSchema = z.array(
+  userSchema.omit({
+    password_hash: true,
+  }),
+);
 
 export type UserDTO = z.infer<typeof userSchema>;
 export type UserMinimalSchema = z.infer<typeof userMinimalSchema>;

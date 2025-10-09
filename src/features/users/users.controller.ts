@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { UserDTO } from "./dtos/user.dto";
+import { UserMinimalSchema } from "./dtos/user.dto";
 import { inject, injectable } from "tsyringe";
 import { UsersService } from "./users.service";
 import { UserParamsSchema } from "./dtos/user-params.dto";
@@ -16,7 +16,10 @@ export class UsersController {
     res.json(AllUsers);
   };
 
-  getById = async (req: Request<UserParamsSchema>, res: Response<UserDTO>) => {
+  getById = async (
+    req: Request<UserParamsSchema>,
+    res: Response<UserMinimalSchema>,
+  ) => {
     // TODO: Task list for implementation
     // 1. Validate request params using userParamsSchema
     const { id } = req.params;
@@ -25,15 +28,20 @@ export class UsersController {
   };
 
   update = async (
-    req: Request<UserParamsSchema, UserDTO, UpdateUserSchema>,
+    req: Request<UserParamsSchema, UserMinimalSchema, UpdateUserSchema>,
     res: Response,
   ) => {
     // TODO: Task list for implementation
     const { id } = req.params;
     const updatedUserData = req.body;
+    const autheticaedUser = req.user;
 
     // 3. Call service to update user
-    const updatedUser = await this.usersService.update(id, updatedUserData);
+    const updatedUser = await this.usersService.update(
+      autheticaedUser,
+      id,
+      updatedUserData,
+    );
     res.json(updatedUser);
   };
 

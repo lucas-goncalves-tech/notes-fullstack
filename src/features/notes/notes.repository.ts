@@ -3,7 +3,7 @@ import { UpdateNoteSchema } from "./dtos/update-note.dto";
 import { randomUUID } from "crypto";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
-import { noteSchema, NoteSchemaType } from "./dtos/note.dto";
+import { noteSchema, NoteSchemaType, notesSchema } from "./dtos/note.dto";
 
 @injectable()
 export class NotesRepository {
@@ -11,12 +11,17 @@ export class NotesRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  async getAll(): Promise<NoteSchemaType[]> {
+  async getAll(userId: string): Promise<NoteSchemaType[]> {
     const db = this.connectionManager.acquire();
     try {
-      const sql = `SELECT * FROM "notes";`;
+      const sql = `SELECT * FROM "notes" WHERE "user_id" = ?;`;
       const stmt = db.prepare(sql);
-      return stmt.all() as NoteSchemaType[];
+      const notes = notesSchema.safeParse(stmt.all(userId));
+      if (notes.success) {
+        return notes.data;
+      } else {
+        return [];
+      }
     } finally {
       this.connectionManager.release(db);
     }
@@ -33,20 +38,17 @@ export class NotesRepository {
     }
   }
 
-  async create(note: CreateNoteSchema): Promise<NoteSchemaType> {
+  async create(
+    userId: string,
+    note: CreateNoteSchema,
+  ): Promise<NoteSchemaType> {
     const db = this.connectionManager.acquire();
     const noteID = randomUUID();
     const sql = `INSERT INTO "notes" ("id", "title", "description", "importance", "user_id") VALUES (?, ?, ?, ?, ?);`;
 
     try {
       const stmt = db.prepare(sql);
-      stmt.run(
-        noteID,
-        note.title,
-        note.description,
-        note.importance,
-        note.user_id,
-      );
+      stmt.run(noteID, note.title, note.description, note.importance, userId);
       return noteSchema.parseAsync(await this.getByID(noteID));
     } catch (err) {
       if (err instanceof Error)
@@ -58,9 +60,10 @@ export class NotesRepository {
   }
 
   async update(
-    id: string,
+    userId: string,
+    noteIdToUpdate: string,
     note: UpdateNoteSchema,
-  ): Promise<NoteSchemaType | undefined> {
+  ): Promise<NoteSchemaType> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
@@ -90,13 +93,9 @@ export class NotesRepository {
 
     try {
       const stmt = db.prepare(sql);
-      const result = stmt.run(...values, id, note.user_id);
+      stmt.run(...values, noteIdToUpdate, userId);
 
-      if (result.changes === 0) {
-        return undefined;
-      }
-      // Return the updated note
-      return noteSchema.parseAsync(await this.getByID(id));
+      return noteSchema.parseAsync(await this.getByID(noteIdToUpdate));
     } catch (err) {
       if (err instanceof Error)
         console.error("SQL notes update error: ", err.message);

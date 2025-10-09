@@ -16,11 +16,11 @@ export class UsersRepository {
     @inject("ConnectionManager") private connectionManager: ConnectionManager,
   ) {}
 
-  async getAll(): Promise<UserDTO[]> {
+  async getAll(): Promise<UserMinimalSchema[]> {
     const db = this.connectionManager.acquire();
     try {
       const stmt = db.prepare(`SELECT * FROM "users"`);
-      const users = await usersSchema.parseAsync(stmt.all());
+      const users = usersSchema.parse(stmt.all());
       return users;
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
@@ -30,12 +30,17 @@ export class UsersRepository {
     }
   }
 
-  async getByID(id: string): Promise<UserDTO | undefined> {
+  async getByID(id: string): Promise<UserMinimalSchema | undefined> {
     const db = this.connectionManager.acquire();
     const sql = `SELECT * FROM "users" WHERE "id" = ?`;
     try {
       const stmt = db.prepare(sql);
-      return stmt.get(id) as UserDTO | undefined;
+      const user = userMinimalSchema.safeParse(stmt.get(id));
+      if (user.success) {
+        return user.data;
+      } else {
+        return undefined;
+      }
     } catch (error) {
       if (error instanceof Error) console.error("SQL error: ", error.message);
       throw error;
@@ -75,18 +80,20 @@ export class UsersRepository {
     }
   }
 
-  async update(id: string, user: UpdateUserSchema): Promise<UserDTO> {
+  async update(
+    userIdToUpdate: string,
+    updateUserData: UpdateUserSchema,
+  ): Promise<UserMinimalSchema> {
     const db = this.connectionManager.acquire();
     const fields = [];
     const values = [];
 
     const fieldMap: Partial<UserDTO> = {
       name: "name",
-      email: "email",
     };
 
-    for (const key in user) {
-      const value = user[key as keyof UpdateUserSchema];
+    for (const key in updateUserData) {
+      const value = updateUserData[key as keyof UpdateUserSchema];
       if (value !== undefined) {
         fields.push(`${fieldMap[key as keyof typeof fieldMap]} = ?`);
         values.push(value);
@@ -102,10 +109,10 @@ export class UsersRepository {
 
     try {
       const stmt = db.prepare(sql);
-      stmt.run(...values, id);
+      stmt.run(...values, userIdToUpdate);
 
       // Return the updated note
-      return (await this.getByID(id))!;
+      return (await this.getByID(userIdToUpdate))!;
     } catch (err) {
       if (err instanceof Error) console.error("SQL error: ", err.message);
       throw err;

@@ -6,6 +6,7 @@ import { createNoteSchema } from "./dtos/create-note.dto";
 import { updateNoteSchema } from "./dtos/update-note.dto";
 import { noteParamsSchema } from "./dtos/note-params.dto";
 import { container } from "tsyringe";
+import { authMiddleware } from "../../shared/middleware/auth.middleware";
 
 const notesRouter = Router();
 const notesController = container.resolve(NotesController);
@@ -16,6 +17,8 @@ const notesController = container.resolve(NotesController);
  *   get:
  *    tags:
  *      - Notas
+ *    security:
+ *      - bearerAuth: []
  *    summary: Lista de todas as notas.
  *    responses:
  *      200:
@@ -37,8 +40,14 @@ const notesController = container.resolve(NotesController);
  *                description: "Descrição da minha nota 2"
  *                importance: "media"
  *                completed: 1
+ *      500:
+ *        description: Erro interno no servidor
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/InternalServerError"
  */
-notesRouter.get("/", notesController.getAll);
+notesRouter.get("/", authMiddleware, notesController.getAll);
 
 /**
  * @swagger
@@ -73,6 +82,12 @@ notesRouter.get("/", notesController.getAll);
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/NotFound"
+ *      500:
+ *        description: Erro interno no servidor
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/InternalServerError"
  */
 notesRouter.get("/:id", notesController.getById);
 
@@ -83,6 +98,8 @@ notesRouter.get("/:id", notesController.getById);
  *    summary: Cria uma nova nota.
  *    tags:
  *      - Notas
+ *    security:
+ *      - bearerAuth: []
  *    requestBody:
  *      required: true
  *      content:
@@ -108,9 +125,16 @@ notesRouter.get("/:id", notesController.getById);
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/BadRequest"
+ *      500:
+ *        description: Erro interno no servidor!
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/InternalServerError"
  */
 notesRouter.post(
   "/",
+  authMiddleware,
   validate({
     body: createNoteSchema,
   }),
@@ -124,6 +148,8 @@ notesRouter.post(
  *    summary: Atualizar uma nota com base no ID.
  *    tags:
  *      - Notas
+ *    security:
+ *      - bearerAuth: []
  *    parameters:
  *      - name: id
  *        in: path
@@ -155,9 +181,16 @@ notesRouter.post(
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/NotFound"
+ *      500:
+ *        description: Erro interno no servidor
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/InternalServerError"
  */
 notesRouter.put(
   "/:id",
+  authMiddleware,
   validate({
     body: updateNoteSchema,
     params: noteParamsSchema,
@@ -172,6 +205,8 @@ notesRouter.put(
  *    summary: Deletar uma nota com base no ID.
  *    tags:
  *      - Notas
+ *    security:
+ *      - bearerAuth: []
  *    parameters:
  *      - name: id
  *        in: path
@@ -188,7 +223,13 @@ notesRouter.put(
  *          application/json:
  *            schema:
  *              $ref: "#/components/schemas/NotFound"
+ *      500:
+ *        description: Erro interno no servidor
+ *        content:
+ *          application/json:
+ *            schema:
+ *              $ref: "#/components/schemas/InternalServerError"
  */
-notesRouter.delete("/:id", notesController.delete);
+notesRouter.delete("/:id", authMiddleware, notesController.delete);
 
 export default notesRouter;

@@ -3,6 +3,9 @@ import { validate } from "../../shared/middleware/validation.middleware";
 import { container } from "tsyringe";
 import { UsersController } from "./users.controller";
 import { userParamsSchema } from "./dtos/user-params.dto";
+import { authMiddleware } from "../../shared/middleware/auth.middleware";
+import { authorize } from "../../shared/middleware/rbac.middleware";
+import { updateUserSchema } from "./dtos/update-user.dto";
 
 const usersRouter = Router();
 const usersController = container.resolve(UsersController);
@@ -13,6 +16,8 @@ const usersController = container.resolve(UsersController);
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security:
+ *      - bearerAuth: []
  *     responses:
  *       200:
  *         description: List of all users
@@ -25,7 +30,12 @@ const usersController = container.resolve(UsersController);
  *       500:
  *         description: Internal server error
  */
-usersRouter.get("/", usersController.getAll);
+usersRouter.get(
+  "/",
+  authMiddleware,
+  authorize(["admin"]),
+  usersController.getAll,
+);
 
 /**
  * @swagger
@@ -33,6 +43,8 @@ usersRouter.get("/", usersController.getAll);
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -64,6 +76,8 @@ usersRouter.get("/", usersController.getAll);
  */
 usersRouter.get(
   "/:id",
+  authMiddleware,
+  authorize(["admin"]),
   validate({ params: userParamsSchema }),
   usersController.getById,
 );
@@ -74,6 +88,8 @@ usersRouter.get(
  *   put:
  *     summary: Update a user by ID
  *     tags: [Users]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -111,7 +127,8 @@ usersRouter.get(
  */
 usersRouter.put(
   "/:id",
-  validate({ params: userParamsSchema }),
+  authMiddleware,
+  validate({ params: userParamsSchema, body: updateUserSchema }),
   usersController.update,
 );
 
@@ -121,6 +138,8 @@ usersRouter.put(
  *   delete:
  *     summary: Delete a user by ID
  *     tags: [Users]
+ *     security:
+ *      - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -131,12 +150,6 @@ usersRouter.put(
  *     responses:
  *       204:
  *         description: User deleted successfully
- *       400:
- *         description: Validation error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/BadRequest'
  *       404:
  *         description: User not found
  *         content:
@@ -148,6 +161,8 @@ usersRouter.put(
  */
 usersRouter.delete(
   "/:id",
+  authMiddleware,
+  authorize(["admin"]),
   validate({ params: userParamsSchema }),
   usersController.delete,
 );
