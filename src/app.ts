@@ -12,8 +12,10 @@ import { errorHandler } from "./shared/middleware/error-handler.middleware";
 
 import swaggerUi from "swagger-ui-express";
 import { swaggerSpec } from "./shared/config/swagger";
+import helmet from "helmet";
 
 const app = express();
+app.use(helmet());
 app.use(express.json());
 app.use(requestLogger);
 app.use(cors());

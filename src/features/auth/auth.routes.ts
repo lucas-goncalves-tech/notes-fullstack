@@ -5,9 +5,12 @@ import { container } from "tsyringe";
 import { AuthController } from "./auth.controller";
 import { loginUserSchema } from "./dtos/login-user.dto";
 import { authMiddleware } from "../../shared/middleware/auth.middleware";
+import { authLimiter } from "../../shared/middleware/rate-limiter.middleware";
 
 const authController = container.resolve(AuthController);
 const authRouter = Router();
+
+authRouter.use(["/login"], authLimiter);
 
 /**
  * @swagger
