@@ -92,11 +92,26 @@ npm run start
 
 ## Variáveis de Ambiente
 
-Possíveis variáveis esperadas (inferidas):
+O projeto utiliza um arquivo `.env` na raiz, baseado em `.env.example`.  
+Essas variáveis controlam portas, autenticação, criptografia e conexões externas.
 
-- `PORT`
-- `NODE_ENV`
-- `JWT_SECRET`
+| Variável                 | Descrição                                                                 |
+| ------------------------ | ------------------------------------------------------------------------- |
+| `PORT`                   | Porta onde o servidor Express será executado. Ex: `3333`.                 |
+| `DATABASE_PATH`          | Caminho do banco de dados (por exemplo, SQLite). Ex: `./database.sqlite`. |
+| `BCRYPT_SALT_ROUNDS`     | Número de rounds de salt para hash de senha com bcrypt. Ex: `10`.         |
+| `JWT_SECRET`             | Chave secreta usada para assinar tokens JWT de acesso.                    |
+| `JWT_EXPIRES_IN`         | Tempo de expiração do token de acesso. Ex: `15m`, `1h`, `7d`.             |
+| `JWT_REFRESH_SECRET`     | Chave secreta usada para assinar tokens de refresh.                       |
+| `JWT_REFRESH_EXPIRES_IN` | Tempo de expiração do token de refresh. Ex: `7d`, `30d`.                  |
+| `REDIS_URL`              | URL de conexão com o Redis.                                               |
+| `NODE_ENV`               | Ambiente de execução: `development`, `production` ou `test`.              |
+
+> **Dica:**
+>
+> - Mantenha segredos (`JWT_SECRET`, `JWT_REFRESH_SECRET`) fora do repositório.
+> - Em produção, defina `NODE_ENV=production` para otimizar desempenho.
+> - Configure o Redis apenas se sua camada de cache ou autenticação exigir.
 
 ## Endpoints
 
