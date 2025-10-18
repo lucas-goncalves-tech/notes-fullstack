@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import { UnauthorizedError } from "../erros/unauthorized.error";
+import { UnauthorizedError } from "../errors/unauthorized.error";
 import jwt, {
   JsonWebTokenError,
   Secret,
   TokenExpiredError,
 } from "jsonwebtoken";
 import redisClient from "../redis/client";
+import { jwtPayloadSchema } from "../../features/auth/dtos/jwt-payload.dto";
+import { InternalServerError } from "../errors/interval-server.error";
 
 const JWT_SECRET = process.env.JWT_SECRET as Secret;
 if (!JWT_SECRET) {
@@ -25,11 +27,18 @@ export async function authMiddleware(
 
   const blacklistedtoken = await redisClient.get(jwt_token);
 
-  if (blacklistedtoken) throw new UnauthorizedError();
+  if (blacklistedtoken) {
+    throw new UnauthorizedError();
+  }
 
   try {
     const payload = jwt.verify(jwt_token, JWT_SECRET) as jwt.JwtPayload;
-    req.user = payload;
+    const safePayload = jwtPayloadSchema.safeParse(payload);
+    if (safePayload.success) {
+      req.user = safePayload.data;
+    } else {
+      throw new InternalServerError();
+    }
     next();
   } catch (err) {
     if (err instanceof TokenExpiredError || err instanceof JsonWebTokenError) {

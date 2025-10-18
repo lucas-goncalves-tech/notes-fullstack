@@ -1,15 +1,21 @@
 import { NextFunction, Request, Response } from "express";
+import chalk from "chalk";
 
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
   const { method, originalUrl } = req;
-  const startTime = Date.now();
 
   res.on("finish", () => {
-    const { statusCode } = res;
-    const duration = Date.now() - startTime;
+    const duration = Date.now() - start;
+    const status = res.statusCode;
+
+    const statusColor =
+      status >= 500 ? chalk.red : status >= 400 ? chalk.yellow : chalk.green;
 
     console.log(
-      `[${method}] | ${originalUrl} - status code: ${statusCode} | (${duration}ms)`,
+      `${chalk.gray(new Date().toISOString())} | ${chalk.cyan(method)} ${chalk.white(
+        originalUrl,
+      )} | ${statusColor(status)} | ${duration}ms`,
     );
   });
 

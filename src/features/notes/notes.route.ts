@@ -7,9 +7,12 @@ import { updateNoteSchema } from "./dtos/update-note.dto";
 import { noteParamsSchema } from "./dtos/note-params.dto";
 import { container } from "tsyringe";
 import { authMiddleware } from "../../shared/middleware/auth.middleware";
+import { authLimiter } from "../../shared/middleware/rate-limiter.middleware";
 
 const notesRouter = Router();
 const notesController = container.resolve(NotesController);
+
+notesRouter.use(["/notes"], authLimiter);
 
 /**
  * @swagger

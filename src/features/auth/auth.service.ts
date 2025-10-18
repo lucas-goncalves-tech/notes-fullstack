@@ -3,15 +3,15 @@ import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
 import { RegisterUserDTO } from "./dtos/register-user.dto";
 import { UsersRepository } from "../users/users.repository";
-import { ConflictError } from "../../shared/erros/conflict.error";
+import { ConflictError } from "../../shared/errors/conflict.error";
 import { LoginPayloadDTO, LoginUserDTO } from "./dtos/login-user.dto";
-import { UnauthorizedError } from "../../shared/erros/unauthorized.error";
+import { UnauthorizedError } from "../../shared/errors/unauthorized.error";
 import { userMinimalSchema } from "../users/dtos/user.dto";
-import { InternalServerError } from "../../shared/erros/interval-server.error";
+import { InternalServerError } from "../../shared/errors/interval-server.error";
 import { RefreshTokenDTO } from "./dtos/refresh-token.dto";
-import { NotFoundError } from "../../shared/erros/not-found.error";
+import { NotFoundError } from "../../shared/errors/not-found.error";
 import { jwtPayloadSchema } from "./dtos/jwt-payload.dto";
-import { BlackListService } from "../../shared/serves/blacklist.service";
+import { BlackListService } from "../../shared/services/blacklist.service";
 
 type JWTSIGNOPTIONS = "5m" | "10m" | "15m";
 
@@ -36,7 +36,7 @@ export class AuthService {
 
   async register(credentials: RegisterUserDTO) {
     const userExist = await this.userRepository.getByEmail(credentials.email);
-    if (userExist) throw new ConflictError("Email already in use");
+    if (userExist) throw new ConflictError("Email já foi cadastrado!");
 
     const hashedPassword = await bcrypt.hash(credentials.password, this.salt);
     const newUser = {
@@ -72,7 +72,6 @@ export class AuthService {
       const refreshToken = jwt.sign(refresh_payload, this.JWT_REFRESH_SECRET, {
         expiresIn: this.JWT_REFRESH_EXPIRES_IN,
       });
-
       return { accessToken, refreshToken };
     } else {
       throw new InternalServerError();
@@ -97,7 +96,6 @@ export class AuthService {
         const accessToken = jwt.sign(payload.data, this.JWT_SECRET, {
           expiresIn: this.JWT_EXPIRES_IN,
         });
-
         return accessToken;
       } else {
         throw new InternalServerError();

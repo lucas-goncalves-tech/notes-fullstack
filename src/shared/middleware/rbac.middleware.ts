@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { ForbbidenError } from "../erros/forbbiden.error";
+import { ForbiddenError } from "../errors/forbidden.error";
 
 type IAllowedRoles = "user" | "admin";
 
@@ -11,6 +11,6 @@ export const authorize =
     if (userRole && roles.includes(userRole)) {
       next();
     } else {
-      throw new ForbbidenError();
+      throw new ForbiddenError();
     }
   };

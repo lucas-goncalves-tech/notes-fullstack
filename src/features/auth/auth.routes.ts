@@ -68,6 +68,9 @@ authRouter.post(
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/LoginUserDto'
+ *           example:
+ *             email: "teste@teste.com"
+ *             password: "12345678"
  *     responses:
  *       200:
  *         description: User logged successfully
@@ -122,7 +125,7 @@ authRouter.post(
  *             schema:
  *               $ref: '#/components/schemas/InternalServerError'
  */
-authRouter.get("/me", authMiddleware, authController.getProfile);
+authRouter.get("/me", authMiddleware, authController.me);
 
 /**
  * @swagger

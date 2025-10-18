@@ -1,14 +1,14 @@
 import { inject, injectable } from "tsyringe";
-import { NotFoundError } from "../../shared/erros/not-found.error";
+import { NotFoundError } from "../../shared/errors/not-found.error";
 import { CreateNoteSchema } from "./dtos/create-note.dto";
 import { UpdateNoteSchema } from "./dtos/update-note.dto";
 import { NotesRepository } from "./notes.repository";
 import { NoteSchemaType } from "./dtos/note.dto";
 import { JWTPayloadDTO } from "../auth/dtos/jwt-payload.dto";
 import { UsersRepository } from "../users/users.repository";
-import { UnauthorizedError } from "../../shared/erros/unauthorized.error";
-import { ForbbidenError } from "../../shared/erros/forbbiden.error";
-import { BadRequestError } from "../../shared/erros/bad-request.error";
+import { UnauthorizedError } from "../../shared/errors/unauthorized.error";
+import { ForbiddenError } from "../../shared/errors/forbidden.error";
+import { BadRequestError } from "../../shared/errors/bad-request.error";
 
 @injectable()
 export class NotesService {
@@ -64,7 +64,7 @@ export class NotesService {
       autheticatedUser.role !== "admin" &&
       autheticatedUser.id !== noteExists.user_id
     )
-      throw new ForbbidenError();
+      throw new ForbiddenError();
 
     return await this.notesRepository.update(
       existUser.id,
@@ -88,7 +88,7 @@ export class NotesService {
       autheticatedUser.role !== "admin" &&
       autheticatedUser.id !== noteExists.user_id
     )
-      throw new ForbbidenError();
+      throw new ForbiddenError();
     this.notesRepository.delete(noteIdToDelete);
   }
 }

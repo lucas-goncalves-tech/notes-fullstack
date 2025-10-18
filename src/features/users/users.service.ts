@@ -3,10 +3,10 @@ import { NotesRepository } from "../notes/notes.repository";
 import { inject, injectable } from "tsyringe";
 import { ConnectionManager } from "../../database/pool";
 import { UserMinimalSchema } from "./dtos/user.dto";
-import { InternalServerError } from "../../shared/erros/interval-server.error";
-import { NotFoundError } from "../../shared/erros/not-found.error";
+import { InternalServerError } from "../../shared/errors/interval-server.error";
+import { NotFoundError } from "../../shared/errors/not-found.error";
 import { UpdateUserSchema } from "./dtos/update-user.dto";
-import { ForbbidenError } from "../../shared/erros/forbbiden.error";
+import { ForbiddenError } from "../../shared/errors/forbidden.error";
 import { JWTPayloadDTO } from "../auth/dtos/jwt-payload.dto";
 
 @injectable()
@@ -44,7 +44,7 @@ export class UsersService {
       autheticaedUser.role !== "admin" &&
       userIdToUpdate !== autheticaedUser.id
     ) {
-      throw new ForbbidenError();
+      throw new ForbiddenError();
     }
     const updatedUser = await this.usersRepository.update(
       userIdToUpdate,

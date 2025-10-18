@@ -24,11 +24,12 @@ export class AuthController {
       .cookie("refreshToken", tokens.refreshToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+        path: "/",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       })
       .json({
-        token: tokens.accessToken,
+        accessToken: tokens.accessToken,
       });
   };
 
@@ -38,11 +39,11 @@ export class AuthController {
     const accessToken = await this.authService.refreshToken(refreshToken);
 
     res.json({
-      token: accessToken,
+      accessToken: accessToken,
     });
   };
 
-  getProfile = (req: Request, res: Response) => {
+  me = (req: Request, res: Response) => {
     const userPayload = req.user;
 
     res.json(userPayload);
