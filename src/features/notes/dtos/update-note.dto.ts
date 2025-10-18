@@ -13,6 +13,9 @@ export const updateNoteSchema = z
     importance: z.enum(["baixo", "medio", "alto"]).optional(),
     completed: z.union([z.literal(0), z.literal(1)]).optional(),
   })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Pelo menos um campo deve ser fornecido para atualização",
+  })
   .strict();
 
 export type UpdateNoteSchema = z.infer<typeof updateNoteSchema>;

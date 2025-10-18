@@ -8,7 +8,6 @@ import { JWTPayloadDTO } from "../auth/dtos/jwt-payload.dto";
 import { UsersRepository } from "../users/users.repository";
 import { UnauthorizedError } from "../../shared/errors/unauthorized.error";
 import { ForbiddenError } from "../../shared/errors/forbidden.error";
-import { BadRequestError } from "../../shared/errors/bad-request.error";
 
 @injectable()
 export class NotesService {
@@ -21,9 +20,7 @@ export class NotesService {
     autheticatedUser: JWTPayloadDTO | undefined,
   ): Promise<NoteSchemaType[]> {
     if (!autheticatedUser) throw new UnauthorizedError();
-    const existUser = await this.userRepository.getByID(autheticatedUser?.id);
-    if (!existUser) throw new NotFoundError("Usuário");
-    const notes = await this.notesRepository.getAll(existUser.id);
+    const notes = await this.notesRepository.getAll(autheticatedUser.id);
     return notes;
   }
 
@@ -40,10 +37,8 @@ export class NotesService {
     note: CreateNoteSchema,
   ) {
     if (!autheticatedUser) throw new UnauthorizedError();
-    const existUser = await this.userRepository.getByID(autheticatedUser.id);
-    if (!existUser) throw new NotFoundError("Usuário");
 
-    return await this.notesRepository.create(existUser.id, note);
+    return await this.notesRepository.create(autheticatedUser.id, note);
   }
 
   async update(
@@ -51,11 +46,7 @@ export class NotesService {
     noteIdToUpdate: string,
     note: UpdateNoteSchema,
   ): Promise<NoteSchemaType> {
-    if (!Object.values(note).some((value) => value !== undefined))
-      throw new BadRequestError();
     if (!autheticatedUser) throw new UnauthorizedError();
-    const existUser = await this.userRepository.getByID(autheticatedUser.id);
-    if (!existUser) throw new NotFoundError("usuário");
 
     const noteExists = await this.notesRepository.getByID(noteIdToUpdate);
     if (!noteExists) throw new NotFoundError("Nota");
@@ -67,7 +58,7 @@ export class NotesService {
       throw new ForbiddenError();
 
     return await this.notesRepository.update(
-      existUser.id,
+      autheticatedUser.id,
       noteIdToUpdate,
       note,
     );
@@ -78,8 +69,6 @@ export class NotesService {
     noteIdToDelete: string,
   ): Promise<void> {
     if (!autheticatedUser) throw new UnauthorizedError();
-    const existUser = await this.userRepository.getByID(autheticatedUser.id);
-    if (!existUser) throw new NotFoundError("usuário");
 
     const noteExists = await this.notesRepository.getByID(noteIdToDelete);
     if (!noteExists) throw new NotFoundError("Nota");

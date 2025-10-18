@@ -54,48 +54,6 @@ notesRouter.get("/", authMiddleware, notesController.getAll);
 
 /**
  * @swagger
- * /api/notes/{id}:
- *  get:
- *    tags:
- *      - Notas
- *    summary: Lista a nota pelo ID.
- *    parameters:
- *      - name: id
- *        in: path
- *        required: true
- *        schema:
- *          type: string
- *        description: ID único da nota.
- *    responses:
- *      200:
- *        description: Detalhe de uma nota.
- *        content:
- *          application/json:
- *            schema:
- *              $ref: '#/components/schemas/Note'
- *            example:
- *              id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
- *              title: "Minha nota"
- *              description: "Descrição da minha nota"
- *              importance: "baixo"
- *              completed: 0
- *      404:
- *        description: Mensagem de nota não encontrada.
- *        content:
- *          application/json:
- *            schema:
- *              $ref: "#/components/schemas/NotFound"
- *      500:
- *        description: Erro interno no servidor
- *        content:
- *          application/json:
- *            schema:
- *              $ref: "#/components/schemas/InternalServerError"
- */
-notesRouter.get("/:id", notesController.getById);
-
-/**
- * @swagger
  * /api/notes:
  *  post:
  *    summary: Cria uma nova nota.
