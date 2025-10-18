@@ -1,4 +1,4 @@
-# projeto-notas2
+# projeto-notas
 
 > Versão 1.0.0 — Backend Express com TypeScript, Zod, Injeção de Dependência (tsyringe).
 
