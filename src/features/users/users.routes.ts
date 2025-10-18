@@ -6,9 +6,11 @@ import { userParamsSchema } from "./dtos/user-params.dto";
 import { authMiddleware } from "../../shared/middleware/auth.middleware";
 import { authorize } from "../../shared/middleware/rbac.middleware";
 import { updateUserSchema } from "./dtos/update-user.dto";
+import { protectedLimiter } from "../../shared/middleware/rate-limiter.middleware";
 
 const usersRouter = Router();
 const usersController = container.resolve(UsersController);
+usersRouter.use(protectedLimiter);
 
 /**
  * @swagger

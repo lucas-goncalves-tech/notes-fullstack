@@ -1,10 +1,30 @@
+import { Request } from "express";
 import rateLimit from "express-rate-limit";
 
 export const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 10, // Limita cada IP a 10 requisições por janela de tempo
-  message:
-    "Muitas tentativas de login a partir deste IP, por favor, tente novamente após 15 minutos",
-  standardHeaders: true, // Retorna a informação do limite nos cabeçalhos `RateLimit-*`
-  legacyHeaders: false, // Desativa os cabeçalhos `X-RateLimit-*` (legado)
+  windowMs: 15 * 60 * 1000,
+  message: {
+    error:
+      "Muitas tentativas a partir deste IP. Por favor, tente novamente após 15 minutos.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const protectedLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: {
+    error:
+      "Muitas requisições. Por favor, aguarde um pouco antes de continuar.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+
+  keyGenerator: (req: Request) => {
+    if (req.user) {
+      return req.user.id;
+    }
+    return req.ip ?? "unknown_ip";
+  },
 });
