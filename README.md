@@ -127,53 +127,45 @@ Possíveis variáveis esperadas (inferidas):
 ## Estrutura de Pastas
 
 ```text
-README.md
-eslint.config.mjs
-jest.config.mjs
-package-lock.json
-package.json
-prettier.config.mjs
-tsconfig.json
-.husky/pre-commit
-.husky/_/husky.sh
-src/app.ts
-src/main.ts
-src/routes.ts
-src/database/connection.ts
-src/database/migrate.ts
-src/database/pool.ts
-src/database/migrations/001-create-notes-table.sql
-src/database/migrations/002-create-users-table.sql
-src/shared/types/index.d.ts
-src/shared/types/migration.type.ts
-src/shared/config/container.ts
-src/shared/config/swagger.ts
-src/shared/middleware/auth.middleware.ts
-src/shared/middleware/error-handler.middleware.ts
-src/shared/middleware/logger.middleware.ts
-src/shared/middleware/rate-limiter.middleware.ts
-src/shared/middleware/rbac.middleware.ts
-src/shared/middleware/validation.middleware.ts
-src/shared/redis/client.ts
-src/shared/services/blacklist.service.ts
-src/shared/errors/bad-request.error.ts
-src/shared/errors/base.error.ts
-src/shared/errors/conflict.error.ts
-src/shared/errors/forbidden.error.ts
-src/shared/errors/interval-server.error.ts
-src/shared/errors/not-found.error.ts
-src/shared/errors/unauthorized.error.ts
-src/features/notes/notes.controller.ts
-src/features/notes/notes.repository.ts
-src/features/notes/notes.route.ts
-src/features/notes/notes.service.ts
-src/features/users/users.controller.ts
-src/features/users/users.repository.ts
-src/features/users/users.routes.ts
-src/features/users/users.service.ts
-src/features/auth/auth.controller.ts
-src/features/auth/auth.routes.ts
-src/features/auth/auth.service.ts
+projeto-notas-expressjs/
+├── src/
+│   ├── app.ts                 # Configuração principal do Express
+│   ├── main.ts                # Ponto de entrada da aplicação
+│   ├── routes.ts              # Definição das rotas principais
+│   ├── database/              # Configuração e migrações do banco de dados
+│   │   ├── connection.ts
+│   │   ├── migrate.ts
+│   │   └── migrations/        # Arquivos de migração SQL
+│   ├── features/              # Módulos de funcionalidades (Auth, Notes, Users)
+│   │   ├── auth/
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── auth.routes.ts
+│   │   │   ├── auth.service.ts
+│   │   │   └── dtos/
+│   │   ├── notes/
+│   │   │   ├── notes.controller.ts
+│   │   │   ├── notes.route.ts
+│   │   │   ├── notes.repository.ts
+│   │   │   ├── notes.service.ts
+│   │   │   └── dtos/
+│   │   └── users/
+│   │       ├── users.controller.ts
+│   │       ├── users.routes.ts
+│   │       ├── users.repository.ts
+│   │       ├── users.service.ts
+│   │       └── dtos/
+│   └── shared/                # Módulos compartilhados (erros, middleware, config)
+│       ├── config/
+│       │   ├── container.ts   # Configuração do tsyringe (DI)
+│       │   └── swagger.ts     # Configuração do Swagger
+│       ├── errors/            # Classes de erros customizadas
+│       ├── middleware/        # Middlewares globais (autenticação, tratamento de erros, rate limit)
+│       ├── redis/             # Configuração do cliente Redis
+│       └── services/          # Serviços compartilhados (ex: blacklist de tokens)
+├── .env.exemple               # Exemplo de variáveis de ambiente
+├── package.json               # Dependências e scripts do projeto
+├── tsconfig.json              # Configuração do TypeScript
+└── README.md                  # Este arquivo
 ```
 
 ## Boas Práticas e Convenções
