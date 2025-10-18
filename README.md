@@ -1,4 +1,4 @@
-# projeto-notas
+# Projeto Notas (ExpressJS)
 
 > Versão 1.0.0 — Backend Express com TypeScript, Zod, Injeção de Dependência (tsyringe).
 
@@ -32,12 +32,14 @@ Este projeto implementa uma API RESTful para gestão de recursos do domínio do 
 - **bcrypt** para hashing de senhas.
 - **cors** habilitado para clientes externos.
 - **helmet** para headers de segurança.
+- **better-sqlite3** como driver de banco de dados SQLite (persistência local, simples e performática).
+- **Redis** para cache/blacklist de tokens e suporte a sessões/processos assíncronos.
 
 ### Camadas
 
 - **Controllers**: orquestram requisições/respostas.
 - **Services**: regras de negócio, orquestração entre repositórios.
-- **Repositories**: acesso a dados (Prisma/DB ou memória).
+- **Repositories**: acesso a dados.
 - **DTOs/Validators**: contrato de entrada/saída com Zod.
 - **Middlewares**: autenticação, erros, logs, CORS, etc.
 
@@ -87,7 +89,6 @@ npm run start
 - `build`: `tsc`
 - `lint`: `eslint src/**/*.ts`
 - `format`: `prettier --write src/**/*.ts`
-- `test`: `jest`
 - `prepare`: `husky install`
 
 ## Variáveis de Ambiente

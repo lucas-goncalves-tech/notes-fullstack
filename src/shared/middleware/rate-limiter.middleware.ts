@@ -1,5 +1,5 @@
 import { Request } from "express";
-import rateLimit from "express-rate-limit";
+import rateLimit, { ipKeyGenerator } from "express-rate-limit";
 
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -22,9 +22,10 @@ export const protectedLimiter = rateLimit({
   legacyHeaders: false,
 
   keyGenerator: (req: Request) => {
-    if (req.user) {
+    if (req.user && typeof req.user.id === "string") {
       return req.user.id;
     }
-    return req.ip ?? "unknown_ip";
+    const ip = req.ip ?? req.socket.remoteAddress ?? "unknown";
+    return ipKeyGenerator(ip);
   },
 });
