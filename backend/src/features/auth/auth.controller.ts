@@ -36,4 +36,15 @@ export class AuthController {
 
     res.json(userPayload);
   };
+
+  logout = (req: Request, res: Response) => {
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 0,
+    });
+    res.status(204).end();
+  };
 }

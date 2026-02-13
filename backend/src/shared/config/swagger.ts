@@ -4,8 +4,6 @@ import { noteSchema } from "../../features/notes/dtos/note.dto";
 import { createNoteSchema } from "../../features/notes/dtos/create-note.dto";
 import { updateNoteSchema } from "../../features/notes/dtos/update-note.dto";
 import { createUserSchema } from "../../features/users/dtos/create-user.dto";
-import { updateUserSchema } from "../../features/users/dtos/update-user.dto";
-import { userParamsSchema } from "../../features/users/dtos/user-params.dto";
 import { registerUserSchema } from "../../features/auth/dtos/register-user.dto";
 import { userMinimalSchema } from "../../features/users/dtos/user.dto";
 import { loginUserSchema } from "../../features/auth/dtos/login-user.dto";
@@ -90,8 +88,6 @@ const options: swaggerJSDoc.Options = {
             },
           },
         },
-        UpdateUser: z.toJSONSchema(updateUserSchema),
-        UserParams: z.toJSONSchema(userParamsSchema),
         RegisterUserDto: z.toJSONSchema(registerUserSchema),
         LoginUserDto: z.toJSONSchema(loginUserSchema),
         LoginResponse: {

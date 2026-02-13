@@ -18,14 +18,13 @@ export async function authMiddleware(
   _res: Response,
   next: NextFunction,
 ) {
-  const token = req.headers.authorization;
-  if (!token || !token.startsWith("Bearer ")) {
+  const token = req.cookies?.accessToken;
+  if (!token) {
     throw new UnauthorizedError();
   }
-  const jwt_token = token.split(" ")[1];
 
   try {
-    const payload = jwt.verify(jwt_token, JWT_SECRET) as jwt.JwtPayload;
+    const payload = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
     const safePayload = jwtPayloadSchema.safeParse(payload);
     if (safePayload.success) {
       req.user = safePayload.data;

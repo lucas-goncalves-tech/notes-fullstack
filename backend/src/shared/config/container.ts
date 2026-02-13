@@ -4,7 +4,6 @@ import { db } from "../../database/connection";
 import { NotesRepository } from "../../features/notes/notes.repository";
 import { NotesService } from "../../features/notes/notes.service";
 import { UsersRepository } from "../../features/users/users.repository";
-import { UsersService } from "../../features/users/users.service";
 import { AuthService } from "../../features/auth/auth.service";
 
 const connectionManager = new ConnectionManager(db);
@@ -25,10 +24,6 @@ container.register("NotesService", {
 
 container.register("UsersRepository", {
   useClass: UsersRepository,
-});
-
-container.register("UsersService", {
-  useClass: UsersService,
 });
 
 // - Auth -
