@@ -22,22 +22,11 @@ const options: swaggerJSDoc.Options = {
         description: "Operações relacionadas a notas",
       },
       {
-        name: "Users",
-        description: "Operações relacionadas a usuários",
-      },
-      {
         name: "Auth",
         description: "Operações relacioandas a cadastro de usuários",
       },
     ],
     components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: "http",
-          scheme: "bearer",
-          bearerFormat: "JWT",
-        },
-      },
       schemas: {
         Note: z.toJSONSchema(noteSchema),
         CreateNote: z.toJSONSchema(createNoteSchema),
@@ -97,25 +86,6 @@ const options: swaggerJSDoc.Options = {
               type: "string",
               example:
                 "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzZmE4NWY2NC01NzE3LTQ1NjItYjNmYy0yYzk2M2Y2NmFmYTYiLCJpYXQiOjE2ODgwODc0MDAsImV4cCI6MTY4ODA5MTAwMH0.dQw4w9WgXcQ",
-            },
-          },
-        },
-        Token: {
-          type: "object",
-          properties: {
-            token: {
-              type: "string",
-              example:
-                "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjViZmFhYTBlLTYyYzQtNDJlMy1hMTk2LTk0MmM5NDQ2NWU5NSIsIm5hbWUiOiJzdHJpbmciLCJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc1OTUxNzE2NiwiZXhwIjoxNzU5NTE4MDY2fQ.nceyxQsnhDEtFEKt0JGPZARHxL-WUiIiZgy90KPEq64",
-            },
-          },
-        },
-        UpdateResponseUser: {
-          type: "object",
-          properties: {
-            message: {
-              type: "string",
-              example: "Usuário {name} atualizado com sucesso",
             },
           },
         },
